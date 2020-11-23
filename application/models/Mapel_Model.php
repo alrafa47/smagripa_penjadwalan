@@ -19,10 +19,15 @@ class Mapel_Model extends CI_Model
 		return $this->db->query("SELECT * FROM `mapel` inner join kelas on (mapel.kelas = kelas.kelas && mapel.id_jurusan = kelas.id_jurusan) ORDER BY `mapel`.`kode_mapel` ASC ")->result();
 	}
 
+	public function getMapelbyKodeMapel($kodeMapel)
+	{
+		return $this->db->get_where('mapel', ['kode_mapel' => $kodeMapel])->row('nama_mapel');
+	}
 
 	public function listDataMapel()
 	{
 		$this->db->group_by('kode_mapel');
+		$this->db->order_by('id_mapel', 'ASC');
 		return $this->db->get('mapel')->result();
 	}
 
@@ -38,14 +43,26 @@ class Mapel_Model extends CI_Model
 
 	public function tambah_data()
 	{
-		$data = array(
-			'id_mapel' => $this->input->post('id_map'),
-			'nama_mapel' => $this->input->post('nm_map'),
-			'kelas' => $this->input->post('kls'),
-			'beban_jam' => $this->input->post('beban'),
-			'id_jurusan' => $this->input->post('id_jur')
-		);
-		$this->db->insert('mapel', $data);
+		echo $jumlah = $this->input->post('jml_data');
+		echo $id_kelas = $this->input->post('id_kelas');
+		echo $id_mapel = $this->input->post('id_mapel');
+		echo $nama_mapel = $this->input->post('nama_mapel');
+		echo $kode_mapel = $this->input->post('kode_mapel');
+		echo $beban_jam = $this->input->post('beban_jam');
+		echo $id_guru = $this->input->post('guru');
+
+		// for ($i = 0; $i < $jumlah; $i++) {
+		// 	$data = array(
+		// 		'id_tugas' => $id_guru[$i] . '-' . $id_mapel[$i] . '-' . $id_kelas[$i],
+		// 		'id_guru' => $id_guru[$i],
+		// 		'id_mapel' => $id_mapel[$i],
+		// 		'nama_mapel' => $nama_mapel[$i],
+		// 		'kode_mapel' => $kode_mapel[$i],
+		// 		'id_kelas' => $id_kelas[$i],
+		// 		'sisa_jam' => $beban_jam[$i]
+		// 	);
+		// 	$this->db->insert('mapel', $data);
+		// }
 	}
 
 	public function hapus_data($id)

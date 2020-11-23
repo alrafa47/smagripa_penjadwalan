@@ -20,7 +20,7 @@ class DataPenugasanGuru extends CI_Controller
 		// tampil list penugasan guru
 		$data['tugas_guru'] = $this->PenugasanGuru_Model->getAllData();
 		$data['listGuru'] = $this->Guru_Model->getAllData();
-		$data['listMapel'] = $this->Mapel_Model->listDataMapel();
+		$data['listMapel'] = $this->PenugasanGuru_Model->listDataMapelyangKosong();
 		$data['kelas'] = $this->Kelas_Model->getAllData();
 		$data['jurusan'] = $this->Jurusan_Model->getAllData();
 		$this->load->view('templates/header');
@@ -29,24 +29,71 @@ class DataPenugasanGuru extends CI_Controller
 		$this->load->view('templates/footer');
 	}
 
-	public function getDataKelasByKodeMapel()
+	public function getDataKelas()
 	{
-		$kode = $this->input->post('kode_mapel');
-		echo json_encode($this->Mapel_Model->getDataMapelByKodeMapel($kode));
+		$data = $this->PenugasanGuru_Model->dataKelasByKodeMapel($this->input->post('kode_mapel'));
+		// echo json_encode($data);
+		$html = '<form action="' . base_url('DataPenugasanGuru/tambah') . '" method="POST">';
+		$html .= '<input type="hidden" value="' . count($data) . '" name="jml_data">';
+		foreach ($data as $value) {
+			$html .= '<div class="form-group">';
+			$html .= '<label for="exampleFormControlInput1">' . $value->kelas . ' ' . $value->id_jurusan . ' ' . $value->nama_kelas . '</label>';
+			if ($value->id_guru == null) {
+				$html .= '<input type="text" value="' . $value->id_kelas . '" name="id_kelas[]">';
+				$html .= '<input type="text" value="' . $value->id_mapel . '" name="id_mapel[]">';
+				$html .= '<input type="text" value="' . $value->beban_jam . '" name="beban_jam[]">';
+				$html .= '<input type="text" value="' . $value->kode_mapel . '" name="kode_mapel[]">';
+			}
+			// $html .= '<select name="guru[]" class="form-control" disabled >';
+			$html .= ($value->id_guru == null) ? '<select name="guru[]" class="form-control">' : '<select name="guru[]" class="form-control" disabled >';
+			$html .= ($value->id_guru != null) ? '<option selected="selected">Pilih Guru</option>' : '';
+			if ($value->id_guru == null) {
+				$html .= '<option selected="selected">Pilih Guru</option>';
+				foreach ($this->Guru_Model->getAllData() as $datalistGuru) :
+					$selected = ($value->id_guru == $datalistGuru->id_guru) ? '' : 'selected';
+					$html .= '<option value="' . $datalistGuru->id_guru . '"' . $selected . ' >' . $datalistGuru->nama_guru . '</option>';
+				endforeach;
+			} else {
+				# code...
+			}
+			$html .= '</select>';
+			$html .= '</div>';
+		}
+		$html .= '<input type="submit" class="btn btn-success" value="Simpan">';
+		$html .= '</form>';
+		echo $html;
 	}
 
-	public function validation_form()
+	function tampilan_tambah($kode_mapel)
+	{
+		// tampil list penugasan guru
+		$data['kodeMapel'] = $kode_mapel;
+		$data['dataMapel'] = $this->PenugasanGuru_Model->dataKelasByKodeMapel($kode_mapel);
+		$data['guru'] = $this->Guru_Model->getAllData();
+		$data['nama_mapel'] = $this->Mapel_Model->getMapelbyKodeMapel($kode_mapel);
+		$this->load->view('templates/header');
+		$this->load->view('templates/sidebar');
+		$this->load->view('penugasanguru/tambah_data', $data);
+		$this->load->view('templates/footer');
+	}
+
+	public function tambah()
 	{
 		$this->PenugasanGuru_Model->tambah_data();
 		$this->session->set_flashdata('flash_penugasanguru', 'Disimpan');
 		redirect('DataPenugasanGuru');
 	}
 
-	public function hapus($id_pen)
+	public function validation_form()
 	{
-		$this->PenugasanGuru_Model->hapus_data($id_pen);
-		$this->session->set_flashdata('flash_penugasanguru', 'Dihapus');
-		redirect('DataPenugasanGuru');
+		$this->PenugasanGuru_Model->tambah_data();
+		$this->session->set_flashdata('flash_penugasanguru', 'Disimpan');
+		redirect('DataPenugasanGuru/tampilan_tambah');
+	}
+
+	public function hapus()
+	{
+		$this->PenugasanGuru_Model->hapus_data($this->input->post('id_tugas'));
 	}
 
 	public function ubah($id_pen)

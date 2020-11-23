@@ -80,42 +80,79 @@
 			})
 			console.log('inidata' + dataSelect);
 		});
+		// Modal 
+		$('#TugasGuru').on('show.bs.modal', function(event) {
+			var button = $(event.relatedTarget);
+			var mapel = button.data('mapel');
+			var kode_mapel = button.data('kodemapel');
+			var modal = $(this);
+			$.ajax({
+				type: 'POST',
+				url: "<?= base_url('DataPenugasanGuru/getDataKelas') ?>",
+				data: {
+					'kode_mapel': kode_mapel
+				},
+				success: function(data) {
+					modal.find('.modal-title').text('Mata Pelajaran ' + mapel);
+					modal.find('.modal-body input').val(mapel);
+					modal.find('#form').html(data);
+					// html = JSON.parse(data);
+					// console.log(html);
+				}
+			})
+		})
 
+		// $("#btnaddForm").click(function() {
+		// 	var html = `
+		// 	<div class="row inputFormRow">
+		// 	    <div class="col-3">
+		// 	      <div class="form-group">
+		// 	        <select class="form-control"  id="mapelSelectForm" name="mapel[] data-mapelselect="` + numberForm +
+		// 		`" >
+		// 	          <option selected="selected">Pilih Mapel</option>
+		// 	        </select>
+		// 	      </div>
+		// 	    </div>
+		// 	    <div class="col-3">
+		// 	      <div class="form-group">
+		// 	        <select class="form-control" data-kelasselect="` + numberForm +
+		// 		`" >
+		// 	          <option selected="selected">Pilih Mapel</option>
+		// 	        </select>
+		// 	      </div>
+		// 	    </div>
+		// 	    <div class="col-3">
+		// 	      <button type="button" id="removeForm" class="btn btn-block btn-danger">
+		// 	        Remove
+		// 	      </button>
+		// 	    </div>
+		// 	  </div>`;
+		// 	numberForm++;
+		// 	$(".select-form").after(html);
+		// 	// remove
+		// 	$("#removeForm").click(function() {
+		// 		$(this).closest('.inputFormRow').remove();
+		// 	});
+		// });
 
-		$("#btnaddForm").click(function() {
-			var html = `
-			<div class="row inputFormRow">
-			    <div class="col-3">
-			      <div class="form-group">
-			        <select class="form-control"  id="mapelSelectForm" name="mapel[] data-mapelselect="` + numberForm +
-				`" >
-			          <option selected="selected">Pilih Mapel</option>
-			          <?php foreach ($listMapel as $datalistMapel) : ?>
-			            <option value="<?= $datalistMapel->kode_mapel ?>"><?= $datalistMapel->nama_mapel ?></option>
-			          <?php endforeach; ?>
-			        </select>
-			      </div>
-			    </div>
-			    <div class="col-3">
-			      <div class="form-group">
-			        <select class="form-control" data-kelasselect="` + numberForm +
-				`" >
-			          <option selected="selected">Pilih Mapel</option>
-			        </select>
-			      </div>
-			    </div>
-			    <div class="col-3">
-			      <button type="button" id="removeForm" class="btn btn-block btn-danger">
-			        Remove
-			      </button>
-			    </div>
-			  </div>`;
-			numberForm++;
-			$(".select-form").after(html);
-			// remove
-			$("#removeForm").click(function() {
-				$(this).closest('.inputFormRow').remove();
-			});
+		$('div.hapus-data').on('click', function() {
+			const form = $(this);
+			let id_tugas = form.data('idtugas');
+			let form_group = form.parent().parent().parent();
+			$.ajax({
+				url: "<?= base_url('DataPenugasanGuru/hapus') ?>",
+				type: "POST",
+				data: {
+					'id_tugas': id_tugas
+				},
+				success: function(data) {
+					form_group.find(".form-mapel").removeAttr("disabled");
+					form_group.find(".form-kelas").removeAttr("disabled");
+					form_group.find(".form-beban-jam").removeAttr("disabled");
+					form_group.find(".select-guru").removeAttr("disabled");
+					form.remove();
+				}
+			})
 		});
 	</script>
 <?php endif; ?>
