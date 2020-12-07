@@ -33,7 +33,23 @@ class Jadwal_Model extends CI_Model
 		}
 	}
 
-	public function getDataPenjadwalanByIdKelas($idKelas, $hari = null)
+	/* 
+	*cari jadwal berdasarkan sesi hari dan kelas
+	*/
+	public function cariJadwal($sesi, $hari, $id_kelas)
+	{
+		return $this->db->query("SELECT * FROM penjadwalan where sesi  = '$sesi' and hari = '$hari' and id_kelas = '$id_kelas'")->row();
+		// $this->db->where('sesi', $sesi);
+		// $this->db->where('hari', $hari);
+		// $this->db->where('id_kelas', $id_kelas);
+		// return $this->db->get('penjadwalan')->row();
+	}
+
+	/* 
+	* description : mendapatkan data penjadwalan berdasarkan id kelas dan Hari
+	* param : id kelas , hari(can be null)
+	*/
+	public function getDataPenjadwalan($idKelas, $hari)
 	{
 		$this->db->select('penjadwalan.*');
 		$this->db->from('penjadwalan');
@@ -41,27 +57,28 @@ class Jadwal_Model extends CI_Model
 		$this->db->where('keterangan', 'kosong');
 		$this->db->where('kode_jadwal', '-');
 		$this->db->where('hari', $hari);
-		return $this->db->get();
-	}
-
-	public function plotingJadwal($hari, $idKelas, $jadwal, $jumlahSesi, $idTugas, $namaMapel)
-	{
-		for ($i = 0; $i < $jumlahSesi; $i++) {
-			// $this->db->query("UPDATE penjadwalan SET keterangan = '" . $namaMapel . "', kode_jadwal = '" . $idTugas . "' WHERE hari ='" . $hari . "' && id_kelas='" . $idKelas . "' && sesi='" . $jadwal[$i]->sesi . "'");
-			echo $jadwal[$i]->sesi . ", ";
-		}
-		// $this->updateStatusPenugasan($idTugas);
-	}
-
-	public function checkingJadwalyangKosong($hari, $kelas)
-	{
-		$this->db->select('penjadwalan.*');
-		$this->db->from('penjadwalan');
-		$this->db->where('hari', $hari);
-		$this->db->where('kode_jadwal', '-');
-		$this->db->where('keterangan', 'kosong');
-		$this->db->where('id_kelas', $kelas);
 		return $this->db->get()->result();
+	}
+
+	public function isiJadwal($kelas, $hari, $sesi, $id_guru, $id_mapel, $keterangan, $kode_jadwal)
+	{
+		if (is_array($sesi)) {
+			foreach ($sesi as $value) {
+				$data = [
+					'id_guru' => $id_guru,
+					'id_mapel' => $id_mapel,
+					'kode_jadwal' => $kode_jadwal,
+					'keterangan' => $keterangan
+				];
+
+				$this->db->where('sesi', $value);
+				$this->db->where('id_kelas', $kelas);
+				$this->db->where('hari', $hari);
+				$this->db->update('penjadwalan', $data);
+			}
+		} else {
+			echo '<br>{sesi error }<br>';
+		}
 	}
 
 	public function updateStatusPenugasan($id_tugas)

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * 
@@ -29,16 +29,13 @@ class DataGuru extends CI_Controller
 		$this->form_validation->set_rules("pendidikan_gur", "Pendidikan Gur", "required|is_unique[guru.pendidikan_terakhir]");
 		$this->form_validation->set_rules("telp_gur", "Nomor Telpon Gur", "required|is_unique[guru.no_telp]");
 		$this->form_validation->set_rules("email_gur", "Email Gur", "required|is_unique[guru.email]");
-		if ($this->form_validation->run() == FALSE)
-		{
+		if ($this->form_validation->run() == FALSE) {
 			$this->index();
-		}
-		else
-		{
+		} else {
 			$this->Guru_Model->tambah_data();
 			$this->session->set_flashdata('flash_guru', 'Disimpan');
 			redirect('DataGuru');
-		}	
+		}
 	}
 
 	public function hapus($id)
@@ -56,22 +53,16 @@ class DataGuru extends CI_Controller
 		$this->form_validation->set_rules("pendidikan_gur", "Pendidikan Gur", "required");
 		$this->form_validation->set_rules("telp_gur", "Nomor Telpon Gur", "required");
 		$this->form_validation->set_rules("email_gur", "Email Gur", "required");
-		if ($this->form_validation->run() == FALSE)
-		{
-			$data['ubah']= $this->Guru_Model->detail_data($id);
+		if ($this->form_validation->run() == FALSE) {
+			$data['ubah'] = $this->Guru_Model->detail_data($id);
 			$this->load->view('templates/header');
 			$this->load->view('templates/sidebar');
 			$this->load->view('guru/ubah', $data);
 			$this->load->view('templates/footer');
-		}
-		else
-		{
+		} else {
 			$this->Guru_Model->ubah_data();
 			$this->session->set_flashdata('flash_guru', 'DiUbah');
 			redirect('DataGuru');
-		}	
+		}
 	}
-
 }
-
- ?>

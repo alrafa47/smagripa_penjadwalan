@@ -15,6 +15,32 @@ class PenugasanGuru_Model extends CI_Model
 		return $this->db->get()->result();
 	}
 
+	/* 
+	* mengambil data penugasan guru dan beban mapel berdasarkan id guru 
+	*/
+	/* public function getDataByidGuru($id_guru)
+	{
+		$this->db->select('*');
+		$this->db->from('tugas_guru');
+		$this->db->join('mapel', 'tugas_guru.id_mapel = mapel.id_mapel');
+		$this->db->where('tugas_guru.id_guru', $id_guru);
+		return $this->db->get()->result();
+	} */
+
+	/* 
+	* mengambil data penugasan guru dan beban mapel berdasarkan id guru dan id kelas dengan sisa jam !=0
+	*/
+	public function getDatatugasByidGuru($id_guru, $id_kelas)
+	{
+		$this->db->select('*');
+		$this->db->from('tugas_guru');
+		$this->db->join('mapel', 'tugas_guru.id_mapel = mapel.id_mapel');
+		$this->db->where('tugas_guru.id_guru', $id_guru);
+		$this->db->where('tugas_guru.id_kelas', $id_kelas);
+		$this->db->where('tugas_guru.sisa_jam !=', '0');
+		return $this->db->get()->result();
+	}
+
 	public function getAllData()
 	{
 		return $this->db->get('tugas_guru')->result();

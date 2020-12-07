@@ -5,6 +5,9 @@
  */
 class Kelas_Model extends CI_Model
 {
+	/* 
+	* mengambil semua data kelas dan join data jurusan
+	*/
 	public function getAllData()
 	{
 		$this->db->select('id_kelas, kelas, kelas.id_jurusan, jurusan.nama_jurusan, nama_kelas');
