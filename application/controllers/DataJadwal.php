@@ -274,7 +274,7 @@ class DataJadwal extends CI_Controller
 					// echo "</pre>";
 					echo "<br>";
 					// echo $kelas . '-' . $hariSesi['hari'] . '-' . implode(",", $hariSesi['sesi']) . '-' . $id_guru . '-' . $valueMengajar->id_mapel . '-' . $valueMengajar->nama_mapel . '-' . $valueMengajar->id_tugas;
-					// $this->Jadwal_Model->isiJadwal($kelas, $hariSesi['hari'], $hariSesi['sesi'], $id_guru, $valueMengajar->id_mapel, $valueMengajar->nama_mapel, $valueMengajar->id_tugas);
+					$this->Jadwal_Model->isiJadwal($kelas, $hariSesi['hari'], $hariSesi['sesi'], $id_guru, $valueMengajar->id_mapel, $valueMengajar->nama_mapel, $valueMengajar->id_tugas);
 				}
 				echo '<br>';
 				// $this->Jadwal_Model->getDataPenjadwalan($kelas, $value)
