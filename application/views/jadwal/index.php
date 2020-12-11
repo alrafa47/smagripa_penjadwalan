@@ -38,7 +38,9 @@
 				<div class="card">
 					<!-- card-body -->
 					<div class="card-body">
-
+						<a class="btn btn-success" href="<?= base_url('DataJadwal/ploting_jadwal') ?>">ploting jadwal</a>
+						<a class="btn btn-danger" href="<?= base_url('DataJadwal/reset_jadwal') ?>">reset_jadwal</a>
+						<a class="btn btn-primary" href="<?= base_url('DataJadwal/tampilJadwalSementara') ?>">tampil jadwal</a>
 					</div>
 					<!-- /.card-body -->
 				</div>

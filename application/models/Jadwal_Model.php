@@ -49,7 +49,7 @@ class Jadwal_Model extends CI_Model
 	* description : mendapatkan data penjadwalan berdasarkan id kelas dan Hari
 	* param : id kelas , hari(can be null)
 	*/
-	public function getDataPenjadwalan($idKelas, $hari)
+	public function getDataPenjadwalan($idKelas, $hari, $id_guru)
 	{
 		$this->db->select('penjadwalan.*');
 		$this->db->from('penjadwalan');
@@ -57,8 +57,32 @@ class Jadwal_Model extends CI_Model
 		$this->db->where('keterangan', 'kosong');
 		$this->db->where('kode_jadwal', '-');
 		$this->db->where('hari', $hari);
+		$jadwal =  $this->db->get()->result();
+		$jadwalGuru = $this->getDataPenjadwalanguru($hari, $id_guru);
+		// print_r($jadwalGuru);
+		if ($id_guru && !empty($jadwalGuru)) {
+			foreach ($jadwalGuru as $value) {
+				$key[] = array_search($value->sesi, array_column($jadwal, 'sesi'));
+			}
+			foreach ($key as $value) {
+				unset($jadwal[$value]);
+			}
+		}
+		return $jadwal;
+	}
+
+	public function getDataPenjadwalanguru($hari, $id_guru)
+	{
+		$this->db->select('penjadwalan.*');
+		$this->db->from('penjadwalan');
+		// $this->db->where('id_kelas', $idKelas);
+		// $this->db->where('keterangan', 'kosong');
+		// $this->db->where('kode_jadwal', '-');
+		$this->db->where('id_guru', $id_guru);
+		$this->db->where('hari', $hari);
 		return $this->db->get()->result();
 	}
+
 
 	public function isiJadwal($kelas, $hari, $sesi, $id_guru, $id_mapel, $keterangan, $kode_jadwal)
 	{
@@ -76,6 +100,7 @@ class Jadwal_Model extends CI_Model
 				$this->db->where('hari', $hari);
 				$this->db->update('penjadwalan', $data);
 			}
+			$this->updateStatusPenugasan($kode_jadwal);
 		} else {
 			echo '<br>{sesi error }<br>';
 		}
@@ -86,8 +111,9 @@ class Jadwal_Model extends CI_Model
 		$this->db->query("UPDATE tugas_guru SET status = '1' WHERE id_tugas='" . $id_tugas . "'");
 	}
 
-	public function coba()
+	public function resetJadwal()
 	{
-		$this->db->get();
+		$this->db->query('UPDATE penjadwalan SET id_guru = null, id_mapel = null, kode_jadwal = "-", keterangan = "kosong" WHERE id_guru != ""');
+		$this->db->query('UPDATE tugas_guru SET status = "0" WHERE status="1"');
 	}
 }

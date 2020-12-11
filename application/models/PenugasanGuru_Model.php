@@ -48,11 +48,17 @@ class PenugasanGuru_Model extends CI_Model
 
 	public function getAllDataByid_kelas($id_kelas)
 	{
-		return $this->db->query("SELECT tugas_guru.*, mapel.beban_jam, mapel.nama_mapel from tugas_guru left join mapel on tugas_guru.id_mapel = mapel.kode_mapel where tugas_guru.id_kelas= '" . $id_kelas . "' GROUP by id_tugas")->result();
+		return $this->db->query("SELECT tugas_guru.*, mapel.beban_jam, mapel.nama_mapel from tugas_guru left join mapel on tugas_guru.id_mapel = mapel.id_mapel where tugas_guru.id_kelas= '" . $id_kelas . "' GROUP by id_tugas")->result();
 	}
+
+	public function tugasGuruBelumterplot($id_kelas)
+	{
+		return $this->db->query("SELECT tugas_guru.*, mapel.beban_jam, mapel.nama_mapel from tugas_guru left join mapel on tugas_guru.id_mapel = mapel.id_mapel where tugas_guru.id_kelas= '" . $id_kelas . "' AND tugas_guru.status = 0 GROUP by id_tugas")->result();
+	}
+
 	public function getTugasGuruJoinMapelRequestJadwal($id_kelas = null, $hari = null)
 	{
-		return $this->db->query("SELECT tugas_guru.*, mapel.nama_mapel, mapel.beban_jam FROM tugas_guru LEFT JOIN mapel on mapel.kode_mapel = tugas_guru.id_mapel LEFT JOIN request_jadwal on tugas_guru.id_guru = request_jadwal.id_guru where tugas_guru.id_kelas='" . $id_kelas . "' && tugas_guru.status='0' && request_jadwal.hari LIKE '%" . $hari . "%' GROUP BY id_tugas");
+		return $this->db->query("SELECT tugas_guru.*, mapel.nama_mapel, mapel.beban_jam FROM tugas_guru LEFT JOIN mapel on mapel.id_mapel = tugas_guru.id_mapel LEFT JOIN request_jadwal on tugas_guru.id_guru = request_jadwal.id_guru where tugas_guru.id_kelas='" . $id_kelas . "' && tugas_guru.status='0' && request_jadwal.hari LIKE '%" . $hari . "%' GROUP BY id_tugas");
 	}
 
 	public function tambah_data()
