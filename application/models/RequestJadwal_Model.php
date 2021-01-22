@@ -16,12 +16,10 @@ class RequestJadwal_Model extends CI_Model
 	public function getAllDataByid_guru($id_guru)
 	{
 		$query = $this->db->query('SELECT * FROM request_jadwal where id_guru = "' . $id_guru . '"');
-		// $query = $this->db->get_where('request_jadwal', array('id_guru', $id_guru));
 		if ($query->num_rows() > 0) {
 			return $query->row()->hari;
-			// return $query->result();
 		} else {
-			return 'tidak ada';
+			return 'Senin,Selasa,Rabu,Kamis,Jum`at,Sabtu';
 		}
 	}
 

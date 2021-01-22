@@ -82,6 +82,15 @@
                         <?php } ?>
                       </select>
                     </div>
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Kelompok Mapel</label>
+                      <select class="form-control" name="kelompok_mapel">
+                        <option value="A">A </option>
+                        <option value="B">B </option>
+                        <option value="C">C </option>
+                        <option value="D">D </option>
+                      </select>
+                    </div>
 
                     <input type="submit" name="save" class="btn btn-primary" value="Save">
                   </div>

@@ -10,6 +10,14 @@ class Jadwal_Model extends CI_Model
 		return $this->db->get('jadwal')->result();
 	}
 
+	public function getAllDataPenjadwalan()
+	{
+		$this->db->select('penjadwalan.*, guru.code_color, guru.nama_guru, request_jadwal.hari as request');
+		$this->db->join('guru', 'guru.id_guru = penjadwalan.id_guru', 'left');
+		$this->db->join('request_jadwal', 'guru.id_guru = request_jadwal.id_guru', 'left');
+		return $this->db->get('penjadwalan')->result();
+	}
+
 	public function insertData($hari, $kelas, $sesi, $kodeJadwal, $keterangan, $jam_mulai, $jam_selesai)
 	{
 		$data = array(
@@ -31,6 +39,11 @@ class Jadwal_Model extends CI_Model
 		} else {
 			return false;
 		}
+	}
+
+	public function checkingJadwalTabrakan($hari = null, $sesi, $idGuru)
+	{
+		return $this->db->query("SELECT * FROM penjadwalan where hari='$hari' && sesi='$sesi' && id_guru  = '$idGuru'")->result();
 	}
 
 	/* 
@@ -59,16 +72,30 @@ class Jadwal_Model extends CI_Model
 		$this->db->where('hari', $hari);
 		$jadwal =  $this->db->get()->result();
 		$jadwalGuru = $this->getDataPenjadwalanguru($hari, $id_guru);
-		// print_r($jadwalGuru);
 		if ($id_guru && !empty($jadwalGuru)) {
+			$key = [];
 			foreach ($jadwalGuru as $value) {
-				$key[] = array_search($value->sesi, array_column($jadwal, 'sesi'));
+				$ketemu = array_search($value->sesi, array_column($jadwal, 'sesi'));
+				if (is_int($ketemu)) {
+					$key[] = $ketemu;
+				}
 			}
 			foreach ($key as $value) {
 				unset($jadwal[$value]);
 			}
 		}
 		return $jadwal;
+	}
+
+	public function getJadwalKosong($idKelas, $hari = null)
+	{
+		$this->db->where('kode_jadwal', '-');
+		$this->db->where('keterangan', 'kosong');
+		$this->db->where('id_kelas', $idKelas);
+		if ($hari != null) {
+			$this->db->where('hari', $hari);
+		}
+		return $this->db->get('penjadwalan')->result();
 	}
 
 	public function getDataPenjadwalanguru($hari, $id_guru)
@@ -81,6 +108,16 @@ class Jadwal_Model extends CI_Model
 		$this->db->where('id_guru', $id_guru);
 		$this->db->where('hari', $hari);
 		return $this->db->get()->result();
+	}
+
+	public function getJadwalGuru_Kelas_Hari($kelas, $hari, $guru)
+	{
+		$this->db->where('id_kelas', $kelas);
+		$this->db->where('hari', $hari);
+		$this->db->where('id_guru', $guru);
+		$this->db->where('keterangan', 'kosong');
+		$this->db->where('kode_jadwal', '-');
+		return $this->db->get('penjadwalan')->result();
 	}
 
 
@@ -100,20 +137,91 @@ class Jadwal_Model extends CI_Model
 				$this->db->where('hari', $hari);
 				$this->db->update('penjadwalan', $data);
 			}
-			$this->updateStatusPenugasan($kode_jadwal);
+			$this->updateSisaJam($kode_jadwal, count($sesi), '-');
 		} else {
 			echo '<br>{sesi error }<br>';
 		}
 	}
 
-	public function updateStatusPenugasan($id_tugas)
+	public function updateSisaJam($id_tugas, $jumlah, $status)
 	{
-		$this->db->query("UPDATE tugas_guru SET status = '1' WHERE id_tugas='" . $id_tugas . "'");
+		if ($status == '-') {
+			$this->db->query("UPDATE tugas_guru SET sisa_jam = sisa_jam-$jumlah WHERE id_tugas='" . $id_tugas . "'");
+		} else {
+			$this->db->query("UPDATE tugas_guru SET sisa_jam = sisa_jam+$jumlah WHERE id_tugas='" . $id_tugas . "'");
+		}
+		$dataTugasGuru = $this->db->get_where("tugas_guru", ['id_tugas' => $id_tugas])->row();
+		if ($dataTugasGuru->sisa_jam == 0) {
+			$this->updateStatusPenugasan($id_tugas, 1);
+		} else {
+			$this->updateStatusPenugasan($id_tugas, 0);
+		}
+	}
+
+	public function updateStatusPenugasan($id_tugas, $status)
+	{
+		$this->db->query("UPDATE tugas_guru SET status = '$status' WHERE id_tugas='" . $id_tugas . "'");
 	}
 
 	public function resetJadwal()
 	{
 		$this->db->query('UPDATE penjadwalan SET id_guru = null, id_mapel = null, kode_jadwal = "-", keterangan = "kosong" WHERE id_guru != ""');
 		$this->db->query('UPDATE tugas_guru SET status = "0" WHERE status="1"');
+		$this->db->query('UPDATE tugas_guru SET sisa_jam = beban_jam');
+	}
+
+
+	// pemindahan jadwal pertama ke kedua
+	public function pindahJadwal_1_2($dataFirst, $dataSecond)
+	{
+		if ($dataSecond['id_guru'] == 0) {
+			$dataSecond['id_guru'] = null;
+		}
+		if ($dataSecond['id_mapel'] == 0) {
+			$dataSecond['id_mapel'] = null;
+		}
+
+		$data1 = [
+			'id_guru' => $dataSecond['id_guru'],
+			'id_mapel' => $dataSecond['id_mapel'],
+			'kode_jadwal' => $dataSecond['kode_jadwal'],
+			'keterangan' => $dataSecond['keterangan']
+		];
+		$this->db->update('penjadwalan', $data1, ['id_penjadwalan' => $dataFirst['id_penjadwalan']]);
+	}
+
+	// pemindahan jadwal kedua ke pertama
+	public function pindahJadwal_2_1($dataFirst, $dataSecond)
+	{
+		if ($dataFirst['id_guru'] == 0) {
+			$dataFirst['id_guru'] = null;
+		}
+		if ($dataFirst['id_mapel'] == 0) {
+			$dataFirst['id_mapel'] = null;
+		}
+		$data2 = [
+			'id_guru' => $dataFirst['id_guru'],
+			'id_mapel' => $dataFirst['id_mapel'],
+			'kode_jadwal' => $dataFirst['kode_jadwal'],
+			'keterangan' => $dataFirst['keterangan']
+		];
+		$this->db->update('penjadwalan', $data2, ['id_penjadwalan' => $dataSecond['id_penjadwalan']]);
+	}
+
+	public function pindahJadwal($dataFirst, $dataSecond)
+	{
+		if ($dataFirst['id_guru'] == 0) {
+			$dataFirst['id_guru'] = null;
+		}
+		if ($dataFirst['id_mapel'] == 0) {
+			$dataFirst['id_mapel'] = null;
+		}
+		$data2 = [
+			'id_guru' => $dataFirst['id_guru'],
+			'id_mapel' => $dataFirst['id_mapel'],
+			'kode_jadwal' => $dataFirst['id_tugas'],
+			'keterangan' => $dataFirst['nama_mapel']
+		];
+		$this->db->update('penjadwalan', $data2, ['id_penjadwalan' => $dataSecond['id_penjadwalan']]);
 	}
 }

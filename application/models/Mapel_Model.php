@@ -51,6 +51,7 @@ class Mapel_Model extends CI_Model
 		echo $beban_jam = $this->input->post('beban_jam');
 		echo $id_guru = $this->input->post('guru');
 
+
 		// for ($i = 0; $i < $jumlah; $i++) {
 		// 	$data = array(
 		// 		'id_tugas' => $id_guru[$i] . '-' . $id_mapel[$i] . '-' . $id_kelas[$i],

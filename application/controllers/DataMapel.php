@@ -8,6 +8,9 @@ class DataMapel extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		if (!$this->session->has_userdata('id_user')) {
+			redirect('Login');
+		}
 		$this->load->model('Mapel_Model');
 		$this->load->model('Jurusan_Model');
 		$this->load->library('form_validation');
@@ -66,4 +69,3 @@ class DataMapel extends CI_Controller
 
 
 }
-?>

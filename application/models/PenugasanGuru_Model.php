@@ -32,14 +32,17 @@ class PenugasanGuru_Model extends CI_Model
 	*/
 	public function getDatatugasByidGuru($id_guru, $id_kelas)
 	{
-		$this->db->select('*');
+		$this->db->select('*, guru.code_color');
 		$this->db->from('tugas_guru');
 		$this->db->join('mapel', 'tugas_guru.id_mapel = mapel.id_mapel');
+		$this->db->join('guru', 'guru.id_guru = tugas_guru.id_guru');
 		$this->db->where('tugas_guru.id_guru', $id_guru);
 		$this->db->where('tugas_guru.id_kelas', $id_kelas);
 		$this->db->where('tugas_guru.sisa_jam !=', '0');
 		return $this->db->get()->result();
 	}
+
+
 
 	public function getAllData()
 	{
@@ -51,9 +54,12 @@ class PenugasanGuru_Model extends CI_Model
 		return $this->db->query("SELECT tugas_guru.*, mapel.beban_jam, mapel.nama_mapel from tugas_guru left join mapel on tugas_guru.id_mapel = mapel.id_mapel where tugas_guru.id_kelas= '" . $id_kelas . "' GROUP by id_tugas")->result();
 	}
 
-	public function tugasGuruBelumterplot($id_kelas)
+	public function tugasGuruBelumterplot($id_kelas = null)
 	{
-		return $this->db->query("SELECT tugas_guru.*, mapel.beban_jam, mapel.nama_mapel from tugas_guru left join mapel on tugas_guru.id_mapel = mapel.id_mapel where tugas_guru.id_kelas= '" . $id_kelas . "' AND tugas_guru.status = 0 GROUP by id_tugas")->result();
+		if ($id_kelas === null) {
+			return $this->db->query("SELECT tugas_guru.*, mapel.beban_jam, mapel.nama_mapel , guru.nama_guru, request_jadwal.hari from tugas_guru join guru on tugas_guru.id_guru = guru.id_guru left join mapel on tugas_guru.id_mapel = mapel.id_mapel LEFT JOIN request_jadwal ON tugas_guru.id_guru = request_jadwal.id_guru where tugas_guru.status = 0")->result();
+		}
+		return $this->db->query("SELECT tugas_guru.*, mapel.beban_jam, mapel.nama_mapel, guru.nama_guru from tugas_guru join guru on tugas_guru.id_guru = guru.id_guru left join mapel on tugas_guru.id_mapel = mapel.id_mapel LEFT JOIN request_jadwal ON tugas_guru.id_guru = request_jadwal.id_guru where tugas_guru.id_kelas= '" . $id_kelas . "' AND tugas_guru.status = 0 GROUP by id_tugas")->result();
 	}
 
 	public function getTugasGuruJoinMapelRequestJadwal($id_kelas = null, $hari = null)
@@ -107,6 +113,7 @@ class PenugasanGuru_Model extends CI_Model
 
 	public function detail_data($id)
 	{
+		$this->db->join('mapel', 'tugas_guru.id_mapel = mapel.id_mapel');
 		return $this->db->get_where('tugas_guru', ['id_tugas' => $id])->row_array();
 	}
 

@@ -8,6 +8,9 @@ class DataRequestJadwal extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		if (!$this->session->has_userdata('id_user')) {
+			redirect('Login');
+		}
 		$this->load->model('RequestJadwal_Model');
 		$this->load->model('Guru_Model');
 		$this->load->library('form_validation');

@@ -15,7 +15,8 @@
 <!-- Bootstrap -->
 <script src="<?= base_url() ?>assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- SweetAlert2 -->
-<script src="<?= base_url() ?>assets/plugins/sweetalert2/sweetalert2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<!-- <script src="<?= base_url() ?>assets/plugins/sweetalert2/sweetalert2.min.js"></script> -->
 <!-- Toastr -->
 <script src="<?= base_url() ?>assets/plugins/toastr/toastr.min.js"></script>
 <!-- overlayScrollbars -->
@@ -37,6 +38,9 @@
 <!-- InputMask -->
 <script src="<?= base_url() ?>assets/plugins/moment/moment.min.js"></script>
 <script src="<?= base_url() ?>assets/plugins/inputmask/min/jquery.inputmask.bundle.min.js"></script>
+<!-- description box -->
+<script type="text/javascript" src="<?= base_url() ?>assets/plugins/description-box/easyTooltip.min.js"></script>
+
 
 <script>
 	$(function() {
@@ -156,6 +160,167 @@
 		});
 	</script>
 <?php endif; ?>
+
+<?php if ($this->uri->segment(1) == "DataJadwal") : ?>
+	<script>
+		let dataFirst = '';
+		let dataSecond = '';
+		let plotingAction = false;
+		$('tr .penjadwalan').click(function() {
+			if ($(this).data('guru') != '' || dataFirst != '' || plotingAction == true) {
+				if ($(this).hasClass('first')) {
+					dataFirst = $(this).data('jadwal');
+					let dataKelas = $(this).data('kelas');
+					let dataRequest = $(this).data('request');
+					console.log(dataRequest);
+					if (dataRequest == '') {
+						dataRequest = 'Senin,Selasa,Rabu,Kamis,Jum`at,Sabtu';
+					}
+					$.each(dataRequest.split(','), function(key, value) {
+						$('.penjadwalan').removeClass('first');
+						// $('td[data-hari="' + value + '"][data-kelas="' + dataKelas + '"]').removeClass('first');
+						$('td[data-hari="' + value + '"][data-kelas="' + dataKelas + '"]').css({
+							'border-color': 'black',
+							'border-width': '4px',
+							'border-style': 'dotted'
+						});
+						// $('tr .penjadwalan ').removeClass('first');
+						$('td[data-hari="' + value + '"][data-kelas="' + dataKelas + '"]').addClass('second');
+					});
+					Swal.fire({
+						position: 'top-end',
+						icon: 'success',
+						title: 'Pilihan Pertama',
+						timer: 1500
+					})
+				} else if ($(this).hasClass('second')) {
+					$('tr .penjadwalan').removeClass('second');
+					$('tr .penjadwalan').addClass('first');
+					dataSecond = $(this).data('jadwal');
+					Swal.fire({
+						position: 'top-end',
+						icon: 'success',
+						title: 'Pilihan Kedua',
+						timer: 1500
+					})
+
+				} else {
+					Swal.fire({
+						// position: 'top-end',
+						icon: 'error',
+						title: 'Tukar jadwal di area dengan garis putus',
+						timer: 1500
+					})
+				}
+			} else {
+				Swal.fire({
+					icon: 'error',
+					title: 'Pilih jadwal yang sudah terdapat jadwal Mengajar',
+					timer: 1500
+				})
+			}
+
+			if (plotingAction == true && dataSecond != '') {
+				console.log('klik pertama :' + dataFirst + 'klik kedua :' + dataSecond.id_guru);
+
+				$.ajax({
+					url: "<?= base_url('DataJadwal/pindahJadwal/belumSet') ?>",
+					data: {
+						'tugasGuru': dataFirst,
+						'dataSecond': dataSecond
+					},
+					type: 'POST',
+					dataType: 'json',
+					success: function(response) {
+						if (response.status == 'success') {
+							Swal.fire({
+								icon: 'success',
+								title: 'Oke',
+								text: 'Jadwal Berhasil Ditukar',
+								timer: 1500
+							}).then(function() {
+								location.reload();
+							});
+						} else {
+							Swal.fire({
+								icon: 'error',
+								title: response.keterangan,
+								timer: 1500
+
+							}).then(function() {
+								location.reload();
+							});
+						}
+						dataFirst = '';
+						dataSecond = '';
+					}
+				});
+			} else if (dataFirst != '' && dataSecond != '') {
+				console.log('klik pertama :' + dataFirst.id_guru + 'klik kedua :' + dataSecond.id_guru);
+				$.ajax({
+					url: "<?= base_url('DataJadwal/pindahJadwal') ?>",
+					data: {
+						'dataFirst': dataFirst,
+						'dataSecond': dataSecond
+					},
+					type: 'POST',
+					dataType: 'json',
+					success: function(response) {
+						if (response.status == 'success') {
+							Swal.fire({
+								icon: 'success',
+								title: 'Oke',
+								text: 'Jadwal Berhasil Ditukar',
+								timer: 3000
+							}).then(function() {
+								location.reload();
+							});
+						} else {
+							Swal.fire({
+								icon: 'error',
+								title: response.keterangan,
+							}).then(function() {
+								location.reload();
+							});
+						}
+						dataFirst = '';
+						dataSecond = '';
+					}
+				});
+			} else {
+				console.log(dataFirst);
+				console.log(dataSecond);
+			}
+		});
+
+		$('.plotting').click(function() {
+			plotingAction = true;
+			let dataRequest = $(this).data('request');
+			let dataKelas = $(this).data('kelas');
+			dataFirst = $(this).data('tugasguru');
+			if (dataRequest == '') {
+				dataRequest = 'Senin,Selasa,Rabu,Kamis,Jum`at,Sabtu';
+			}
+			$.each(dataRequest.split(','), function(key, value) {
+				$('.penjadwalan').removeClass('first');
+				// $('td[data-hari="' + value + '"][data-kelas="' + dataKelas + '"]').removeClass('first');
+				$('td[data-hari="' + value + '"][data-kelas="' + dataKelas + '"]').css({
+					'border-color': 'black',
+					'border-width': '4px',
+					'border-style': 'dotted'
+				});
+				$('td[data-hari="' + value + '"][data-kelas="' + dataKelas + '"]').addClass('second');
+			});
+			Swal.fire({
+				position: 'top-end',
+				icon: 'success',
+				title: 'Pilihan Pertama',
+				timer: 1500
+			})
+		});
+	</script>
+<?php endif; ?>
+
 </body>
 
 </html>

@@ -8,6 +8,14 @@ class JadwalKhusus_Model extends CI_Model
 		return $this->db->get()->result_array();
 	}
 
+	/* 
+	* jadwal khusus yang di skip untuk keperluan di controller Data Jadwal
+	*/
+	public function getJadwalKhusus_hari($kelas, $hari)
+	{
+		return $this->db->query("SELECT * FROM `jadwal_khusus` WHERE hari = '" . $hari . "' AND kelas LIKE '%" . $kelas . "' GROUP by sesi ")->result();
+	}
+
 	public function tambah_data()
 	{
 		$hari = $this->input->post('hari');

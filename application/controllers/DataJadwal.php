@@ -1,11 +1,18 @@
 <?php
+
+use Dompdf\Dompdf;
+
 class DataJadwal extends CI_Controller
 {
 	public function __construct()
 	{
 		parent::__construct();
+		if (!$this->session->has_userdata('id_user')) {
+			redirect('Login');
+		}
 		$this->load->library('form_validation');
 		$this->load->model('Jadwal_Model');
+		$this->load->model('Mapel_Model');
 		$this->load->model('Guru_Model');
 		$this->load->model('JadwalKhusus_Model');
 		$this->load->model('Kelas_Model');
@@ -15,7 +22,14 @@ class DataJadwal extends CI_Controller
 	}
 	public function index($halaman = 'default')
 	{
-		$data['jadwal'] = $this->Jadwal_Model->getAllData();
+		$data = [
+			'belumterplot' => $this->PenugasanGuru_Model->tugasGuruBelumterplot(),
+			'kelas' => $this->Kelas_Model->getAllData(),
+			'penjadwalan' => $this->Jadwal_Model->getAllDataPenjadwalan(),
+			'jadwal' => $this->Jadwal_Model->getAllData(),
+			'kelas' => $this->Kelas_Model->getAllData(),
+			'mapel' => $this->Mapel_Model->getAllData()
+		];
 		$this->load->view('templates/header');
 		$this->load->view('templates/sidebar');
 		$this->load->view('jadwal/index', $data);
@@ -97,6 +111,22 @@ class DataJadwal extends CI_Controller
 		echo '</table>';
 	}
 
+	public function tampilJadwal()
+	{
+		$data = [
+			'belumterplot' => $this->PenugasanGuru_Model->tugasGuruBelumterplot(),
+			'kelas' => $this->Kelas_Model->getAllData(),
+			'penjadwalan' => $this->Jadwal_Model->getAllDataPenjadwalan(),
+			'jadwal' => $this->Jadwal_Model->getAllData(),
+			'kelas' => $this->Kelas_Model->getAllData(),
+			'mapel' => $this->Mapel_Model->getAllData()
+		];
+		$this->load->view('templates/header');
+		$this->load->view('templates/sidebar');
+		$this->load->view('jadwal/tampilJadwal', $data);
+		$this->load->view('templates/footer');
+	}
+
 	public function tampilJadwalSementara()
 	{
 		$jadwal = $this->Jadwal_Model->getAllData();
@@ -123,7 +153,7 @@ class DataJadwal extends CI_Controller
 
 				$requestHari = $this->RequestJadwal_Model->getAllDataByid_guru($dataTugasGuru->id_guru);
 				$totalBebanJam += $dataTugasGuru->beban_jam;
-				echo $dataTugasGuru->id_tugas . ' : ' . $dataTugasGuru->nama_mapel .  '=>' . $dataTugasGuru->beban_jam  . ' (' . $requestHari . ')' . ' <br>';
+				echo "$dataTugasGuru->id_tugas  :  $dataTugasGuru->nama_mapel ($dataTugasGuru->beban_jam) => $dataTugasGuru->sisa_jam   ( $requestHari )  <br>";
 			}
 			echo 'total beban jam : ' . $totalBebanJam;
 			echo '</td>';
@@ -144,7 +174,7 @@ class DataJadwal extends CI_Controller
 					} else {
 						$penjadwalan_guru = $this->Jadwal_Model->cariJadwal($i, $rowJadwal->hari, $rowKelas->id_kelas);
 						// $idJadwal = $penjadwalan_guru->id_penjadwalan;
-						$keterangan = $penjadwalan_guru->keterangan;
+						$keterangan = "($penjadwalan_guru->id_guru) $penjadwalan_guru->keterangan";
 						$idJadwal = "";
 						// $keterangan = "";
 						$lama_sesi = $rowJadwal->lama_sesi;
@@ -255,6 +285,7 @@ class DataJadwal extends CI_Controller
 		$dataKelas = $this->Kelas_Model->getAllData();
 		// data kelas 
 		foreach ($dataKelas as $valuedataKelas) {
+			$metode = 1;
 			$kelas = $valuedataKelas->id_kelas;
 			echo "<hr>";
 			echo $kelas;
@@ -267,7 +298,7 @@ class DataJadwal extends CI_Controller
 				echo '<br>';
 				$id_guru = $valueDataGuru->id_guru;
 				$request = $valueDataGuru->hari_request;
-				echo $id_guru . '<br>';
+				echo "$id_guru";
 				echo $valueDataGuru->hari_request . '<br>';
 				echo 'mengajar : <br>';
 				// echo '<pre>';
@@ -276,12 +307,52 @@ class DataJadwal extends CI_Controller
 				foreach ($valueDataGuru->mengajar as $valueMengajar) {
 					echo "<br>-> $valueMengajar->nama_mapel kel. : $valueMengajar->kelompok_mapel beban : $valueMengajar->beban_jam , ";
 					// *pencarian waktu terbaik
-					$this->cariWaktuTerbaik($kelas, $id_guru, $request, $valueMengajar->beban_jam, $valueMengajar->kelompok_mapel, 1, $valueMengajar->id_mapel, $valueMengajar->nama_mapel, $valueMengajar->id_tugas);
+					$this->cariWaktuTerbaik($kelas, $id_guru, $request, $valueMengajar->beban_jam, $valueMengajar->kelompok_mapel, $metode, $valueMengajar->id_mapel, $valueMengajar->nama_mapel, $valueMengajar->id_tugas);
 				}
 				echo '<br>';
-				// break;
+				// 	break;
 			}
 			// break;
+			echo "<hr>";
+			echo "ploting ulang perulangan";
+			echo "<hr>";
+			$kelasKosong = $this->Jadwal_Model->getJadwalKosong($kelas);
+			if (count($kelasKosong) > 0) {
+				$tugasGuruBelumterplot = [];
+				$guru = $this->dataGuru($kelas);
+				foreach (array_column($guru, 'mengajar') as $key => $value) {
+					if (!empty($value)) {
+						$tugasGuruBelumterplot[] = $guru[$key];
+					}
+				}
+				foreach ($tugasGuruBelumterplot as $valueDataGuruBelumTerplot) {
+					echo '<br>';
+					$id_guru = $valueDataGuruBelumTerplot->id_guru;
+					$request = $valueDataGuruBelumTerplot->hari_request;
+					echo $id_guru . '<br>';
+					echo $valueDataGuruBelumTerplot->hari_request . '<br>';
+					echo 'mengajar : <br>';
+					print_r($valueDataGuruBelumTerplot->mengajar);
+					echo '<br>';
+					foreach ($valueDataGuruBelumTerplot->mengajar as $valueMengajar) {
+						echo "<br>-> $valueMengajar->nama_mapel kel. : $valueMengajar->kelompok_mapel sisa beban jam  : $valueMengajar->sisa_jam , ";
+						// echo "<br>-> $valueMengajar->nama_mapel kel. : $valueMengajar->kelompok_mapel sisa beban jam  : $valueMengajar->beban_jam , ";
+						// *pencarian waktu terbaik
+						// $this->cariWaktuTerbaik($kelas, $id_guru, $request, $valueMengajar->beban_jam, $valueMengajar->kelompok_mapel, $metode++, $valueMengajar->id_mapel, $valueMengajar->nama_mapel, $valueMengajar->id_tugas);
+						$this->cariWaktuTerbaik($kelas, $id_guru, $request, $valueMengajar->sisa_jam, $valueMengajar->kelompok_mapel, $metode++, $valueMengajar->id_mapel, $valueMengajar->nama_mapel, $valueMengajar->id_tugas);
+					}
+					echo '<br>';
+				}
+
+				$kelasKosong = $this->Jadwal_Model->getJadwalKosong($kelas);
+				if (count($kelasKosong) > 0) {
+					echo '<br>';
+					echo '=============================';
+					echo "JADWAL STUCK";
+					echo '=============================';
+					echo '<br>';
+				}
+			}
 		}
 	}
 
@@ -312,7 +383,6 @@ class DataJadwal extends CI_Controller
 		*/
 
 		$pembagianJam = $this->pembagianWaktu($kelompokMapel, $bebanJam, $metode);
-		// print_r($pembagianJam);
 		$dataHari = explode(',', $hari);
 		foreach ($pembagianJam as $valuePembagianjam) {
 			$hasilJadwal = $this->jadwalPas($kelas, $valuePembagianjam, $dataHari, $id_guru);
@@ -320,38 +390,106 @@ class DataJadwal extends CI_Controller
 			switch ($hasilJadwal['status']) {
 				case 'Press':
 					echo " sesi press";
-					foreach ($hasilJadwal['sesi'] as $key => $sesi) {
-						// return [
-						// 	'hari' => $key,
-						// 	'sesi' => $sesi[0]
-						// ];
-						$this->Jadwal_Model->isiJadwal($kelas, $key, $sesi[0], $id_guru, $id_mapel, $nama_mapel, $id_tugas);
-						break;
-					}
-					break;
-				case 'tidakPress':
-					echo " proses dahulu";
-					$tempTotal = 0;
-					$hariyangdipilih = '';
-					// print_r($hasilJadwal['sesi']);
-					foreach ($hasilJadwal['sesi'] as $key => $valueHasilJadwal) {
-						if ($tempTotal < count($valueHasilJadwal)) {
-							$tempTotal = count($valueHasilJadwal);
-							$hariyangdipilih = $key;
+					$status = '<div style="background-color: #c82333">error</div>';
+					echo "<br>";
+					print_r($hasilJadwal['sesi']);
+					echo "<br>";
+
+					foreach ($hasilJadwal['sesi'] as $keyHariJadwal => $sesi) {
+						$jadwaltersedia = $this->Jadwal_Model->getJadwalGuru_Kelas_Hari($kelas, $keyHariJadwal, $id_guru);
+						if (count($jadwaltersedia) == 0) {
+							$saranSesi = [];
+							foreach ($sesi as $valueSesi) {
+								$saranSesi = $this->sesiUrut($kelas, $keyHariJadwal, $valueSesi);
+							}
+							if (!empty($saranSesi)) {
+								$this->Jadwal_Model->isiJadwal($kelas, $keyHariJadwal, $saranSesi, $id_guru, $id_mapel, $nama_mapel, $id_tugas);
+								$status = "<div style='background-color: #218838;'>sukses</div>";
+								break;
+							}
 						}
 					}
-					// return [
-					// 	'hari' => $hariyangdipilih,
-					// 	'sesi' => $hasilJadwal['sesi'][$hariyangdipilih][0]
-					// ];
-					$this->Jadwal_Model->isiJadwal($kelas, $hariyangdipilih, $hasilJadwal['sesi'][$hariyangdipilih][0], $id_guru, $id_mapel, $nama_mapel, $id_tugas);
+					echo "<br>";
+					echo "$status : ";
+					print_r($saranSesi);
+					echo "<br>";
+					break;
+				case 'tidakPress':
+					echo "<br>";
+					echo "<div style='background-color: #7FFFD4 ;'>proses dahulu</div>";
+					$tempTotal = 0;
+					$hariyangdipilih = '';
+					$status = '<div style="background-color: #c82333">error</div>';
+
+					foreach ($hasilJadwal['sesi'] as $keyHariJadwal => $sesi) {
+						$jadwaltersedia = $this->Jadwal_Model->getJadwalGuru_Kelas_Hari($kelas, $keyHariJadwal, $id_guru);
+						if (count($jadwaltersedia) == 0) {
+							if ($tempTotal < count($sesi)) {
+								$tempTotal = count($sesi);
+								$hariyangdipilih = $keyHariJadwal;
+							}
+						}
+					}
+					echo "---$hariyangdipilih==>temp Total : " . $tempTotal . "---<br>";
+
+					if ($hariyangdipilih == '') {
+						foreach ($hasilJadwal['sesi'] as $keyHariJadwal => $sesi) {
+							// echo "<br>";
+							// echo "tidak ada pilihan lain jumlah jadwal " . count($jadwaltersedia);
+							if ($tempTotal < count($sesi)) {
+								$tempTotal = count($sesi);
+								$hariyangdipilih = $keyHariJadwal;
+							}
+						}
+						echo 'hari yang dipilih kosong';
+					}
+
+					// print_r($hasilJadwal['sesi'][$hariyangdipilih]);
+					foreach ($hasilJadwal['sesi'][$hariyangdipilih] as $valueSesi) {
+						$saranSesi = $this->sesiUrut($kelas, $hariyangdipilih, $valueSesi);
+						if (!empty($saranSesi)) {
+							// $this->Jadwal_Model->isiJadwal($kelas, $hariyangdipilih, $hasilJadwal['sesi'][$hariyangdipilih][0], $id_guru, $id_mapel, $nama_mapel, $id_tugas);
+							$this->Jadwal_Model->isiJadwal($kelas, $hariyangdipilih, $saranSesi, $id_guru, $id_mapel, $nama_mapel, $id_tugas);
+							$status = "<div style='background-color: #218838;'>sukses</div>";
+							break;
+						}
+					}
+					echo "<br>";
+					echo "$status : ";
+					print_r($saranSesi);
+					echo "<br>";
 					break;
 				case 'tidakMuat':
-					// $metode += 1;
 					echo "tidak muat";
-					// $this->cariWaktuTerbaik($kelas, $id_guru, $hari, $bebanJam, $kelompokMapel, $metode, $id_mapel, $nama_mapel, $id_tugas);
 					break;
 			}
+		}
+	}
+
+	public function sesiUrut($kelas, $hari, $sesi)
+	{
+		$kelas = $this->Kelas_Model->detail_data($kelas)['kelas'];
+		echo "$kelas === $hari";
+		$JadwalKhusus = $this->JadwalKhusus_Model->getJadwalKhusus_hari($kelas, $hari);
+		$sesiKhusus = array_column($JadwalKhusus, 'sesi');
+		$jumlahSesi = count($sesi);
+		$sesiPertama = $sesi[0];
+		$sesiBenar = [];
+		$tempSesi = 0;
+		for ($i = 0; $i < $jumlahSesi; $i++) {
+			$tempSesi = $sesiPertama;
+			if (is_bool(array_search($tempSesi, $sesiKhusus))) {
+				$sesiBenar[] = $sesiPertama;
+			} else {
+				$i--;
+			}
+			$sesiPertama++;
+		}
+
+		if (empty(array_diff($sesi, $sesiBenar))) {
+			return $sesi;
+		} else {
+			print_r($sesiKhusus);
 		}
 	}
 
@@ -442,30 +580,26 @@ class DataJadwal extends CI_Controller
 				}
 				break;
 			case '3':
-				switch ($metodeKe) {
-					case '1':
-						return [3];
-						break;
-						// case '2':
-						// 	return [2, 1];
-						// 	break;
-						// default:
-						// 	return false;
-						// 	break;
-				}
+				// switch ($metodeKe) {
+				// 	case '1':
+				// 		return [3];
+				// 		break;
+				// 	case '2':
+				// 		return [2, 1];
+				// 		break;
+				// }
+				return [3];
 				break;
 			case '2':
-				switch ($metodeKe) {
-					case '1':
-						return [2];
-						break;
-						// case '2':
-						// 	return [1, 1];
-						// 	break;
-						// default:
-						// 	return false;
-						// 	break;
-				}
+				// switch ($metodeKe) {
+				// 	case '1':
+				// 		return [2];
+				// 		break;
+				// case '2':
+				// 	return [1, 1];
+				// 	break;
+				// }
+				return [2];
 				break;
 			default:
 				return [$bebanJam];
@@ -480,7 +614,7 @@ class DataJadwal extends CI_Controller
 	public function jadwalPas($kelas, $pembagianJam, $hari, $id_guru)
 	{
 		echo "jumlah hari yang tersedia :" . count($hari) . "<br>";
-		echo  "Pembagian_jam ($pembagianJam sks)  ->";
+		echo  "<div style='background-color: #DC143C'>Pembagian_jam ($pembagianJam sks)  -> </div>";
 		// echo implode(", ", $pembagianJam);
 		// foreach ($pembagianJam as $beban_jam) {
 		// echo "value pembagian : $beban_jam <br>";
@@ -488,11 +622,11 @@ class DataJadwal extends CI_Controller
 		foreach ($hari as $valueDataHari) {
 			$jumlahHariKosong = 0;
 			// echo $kelas;
-			// echo $valueDataHari;
+			echo $valueDataHari;
 			$dataJadwal = $this->Jadwal_Model->getDataPenjadwalan($kelas, $valueDataHari, $id_guru);
-			// echo "<pre>";
+			// echo "</br>";
 			// print_r($dataJadwal);
-			// echo "</pre>";
+			// echo "</br>";
 			$data = [];
 			if ($pembagianJam <= count($dataJadwal)) {
 				foreach ($dataJadwal as $dataHari) {
@@ -537,6 +671,70 @@ class DataJadwal extends CI_Controller
 	}
 
 	/* 
+	* pindah jadwal
+	*/
+
+	public function pindahJadwal($status = null)
+	{
+		if ($status == null) {
+			$dataFirst = $this->input->post('dataFirst');
+			$dataSecond = $this->input->post('dataSecond');
+
+			if ($dataFirst['id_kelas'] == $dataSecond['id_kelas']) {
+				// if ($dataFirst['id_guru'] != null) {
+				// 	echo 'dataFirst null';
+				// }
+
+				// if ($dataSecond['id_guru'] != null) {
+				// 	echo 'dataSecond null';
+				// }
+				$cekJadwal1 = $this->Jadwal_Model->checkingJadwalTabrakan($dataFirst['hari'], $dataFirst['sesi'], $dataSecond['id_guru']);
+				$cekJadwal2 = $this->Jadwal_Model->checkingJadwalTabrakan($dataSecond['hari'], $dataSecond['sesi'], $dataFirst['id_guru']);
+				if (count($cekJadwal1) == 0 && count($cekJadwal2) == 0) {
+					$this->Jadwal_Model->pindahJadwal_1_2($dataFirst, $dataSecond);
+					$this->Jadwal_Model->pindahJadwal_2_1($dataFirst, $dataSecond);
+					$data['status'] = 'success';
+				} else {
+					$data['keterangan'] = 'Jadwal Tabrakan';
+					$data['status'] = 'error';
+				}
+			} else {
+				$data['keterangan'] = 'tukar jadwal harus berbeda kelas';
+				$data['status'] = 'error';
+			}
+			echo json_encode($data);
+		} else {
+			$tugasGuru = $this->input->post('tugasGuru');
+			$dataFirst = $this->PenugasanGuru_Model->detail_data($tugasGuru);
+			$dataSecond = $this->input->post('dataSecond');
+			$cekJadwal = $this->Jadwal_Model->checkingJadwalTabrakan($dataSecond['hari'], $dataSecond['sesi'], $dataFirst['id_guru']);
+			if (count($cekJadwal) == 0) {
+				// echo "this is data first : ";
+				// print_r($dataFirst);
+				// echo "<br>";
+				// echo "this is data second : ";
+				// print_r($dataSecond);
+				// echo "<br>";
+				$this->Jadwal_Model->pindahJadwal($dataFirst, $dataSecond);
+				if ($dataSecond['id_guru'] != null) {
+					// echo $dataSecond['kode_jadwal'] . "+,";
+					$this->Jadwal_Model->updateSisaJam($dataSecond['kode_jadwal'], 1,  '+');
+					$data['status'] = 'success';
+				} else {
+					$data['status'] = 'success';
+				}
+				// echo $tugasGuru . "-";
+				$this->Jadwal_Model->updateSisaJam($tugasGuru, 1,  '-');
+			} else {
+				$data['keterangan'] = 'Jadwal Tabrakan';
+				$data['status'] = 'error';
+			}
+			echo json_encode($data);
+		}
+	}
+
+
+	/* 
 	* ambil hari yang kosong 
 	*/
 	public function getDataHariKosong($hari, $kelas)
@@ -551,5 +749,27 @@ class DataJadwal extends CI_Controller
 	{
 		$this->Jadwal_Model->resetJadwal();
 		redirect('DataJadwal');
+	}
+
+	public function pdf($id_guru = null)
+	{
+		$data = [
+			'belumterplot' => $this->PenugasanGuru_Model->tugasGuruBelumterplot(),
+			'kelas' => $this->Kelas_Model->getAllData(),
+			'penjadwalan' => $this->Jadwal_Model->getAllDataPenjadwalan(),
+			'jadwal' => $this->Jadwal_Model->getAllData(),
+			'kelas' => $this->Kelas_Model->getAllData(),
+			'mapel' => $this->Mapel_Model->getAllData(),
+			'guru' => $id_guru
+
+		];
+		if ($id_guru != null) {
+			$data['guru'] = $this->Guru_Model->detail_data($id_guru);
+		}
+		// export pdf
+		// $this->load->library('pdfgenerator');
+		// $html = $this->load->view('jadwal/exportPDF', $data, true);
+		// $this->pdfgenerator->generate($html, 'tes');
+		$this->load->view('jadwal/exportPDF', $data);
 	}
 }

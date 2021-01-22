@@ -1,4 +1,3 @@
-Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->
   <section class="content-header">
@@ -39,54 +38,53 @@ Content Wrapper. Contains page content -->
                     </div>
                     <div class="form-group">
                       <label for="exampleInputPassword1">Nama Guru</label>
-                      <input type="text" class="form-control"name="nama_gur" value="<?= $ubah['nama_guru'] ?>">
+                      <input type="text" class="form-control" name="nama_gur" value="<?= $ubah['nama_guru'] ?>">
                     </div>
                     <div class="form-group">
-					  <label>Status Guru</label>
-					  <div class="radio">
-					  	<?php 
-					  	if ($ubah['status']=="honorer") {
-					  	 	$checked1="checked";
-					  	 	$checked2="";
-					  	 } else {
-					  	 	$checked1="";
-					  	 	$checked2="checked";
-					  	 }
-					  	  ?>
-					  <label>
-						<input type="radio" name="status_gur" value="honorer" <?php echo $checked1; ?> required>Guru Honorer
-					  </label>
-					  <label>
-					    <input type="radio" name="status_gur" value="tetap" 
-					    <?php echo $checked2; ?> required>Guru Tetap
-							</label>
-						</div>
-					</div>
-					<div class="form-group">
-						<label>Pendidikan Guru</label>
-						<select class="form-control" name="pendidikan_gur">
-							<option value="">-----Pilih Hari-----</option>
-							<option value="sd">SD</option>
-							<option value="smp">SMP</option>
-							<option value="sma">SMA</option>
-							<option value="smk">SMK</option>
-							<option value="d1">D1</option>
-							<option value="d2">D2</option>
-							<option value="d3">D3</option>
-							<option value="d4">D4</option>
-							<option value="s1">S1</option>
-							<option value="s2">S2</option>
-							<option value="s3">S3</option>
-							<option value="s4">S4</option>
-						</select>
-					</div>
-					<div class="form-group">
+                      <label>Status Guru</label>
+                      <div class="radio">
+                        <?php
+                        if ($ubah['status'] == "honorer") {
+                          $checked1 = "checked";
+                          $checked2 = "";
+                        } else {
+                          $checked1 = "";
+                          $checked2 = "checked";
+                        }
+                        ?>
+                        <label>
+                          <input type="radio" name="status_gur" value="honorer" <?php echo $checked1; ?> required>Guru Honorer
+                        </label>
+                        <label>
+                          <input type="radio" name="status_gur" value="tetap" <?php echo $checked2; ?> required>Guru Tetap
+                        </label>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>Pendidikan Guru</label>
+                      <select class="form-control" name="pendidikan_gur">
+                        <option value="">-----Pilih Hari-----</option>
+                        <option value="sd">SD</option>
+                        <option value="smp">SMP</option>
+                        <option value="sma">SMA</option>
+                        <option value="smk">SMK</option>
+                        <option value="d1">D1</option>
+                        <option value="d2">D2</option>
+                        <option value="d3">D3</option>
+                        <option value="d4">D4</option>
+                        <option value="s1">S1</option>
+                        <option value="s2">S2</option>
+                        <option value="s3">S3</option>
+                        <option value="s4">S4</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
                       <label for="exampleInputPassword1">Nomor Telpon Guru</label>
-                      <input type="number" class="form-control"name="telp_gur" value="<?= $ubah['no_telp'] ?>">
+                      <input type="number" class="form-control" name="telp_gur" value="<?= $ubah['no_telp'] ?>">
                     </div>
                     <div class="form-group">
                       <label for="exampleInputPassword1">Email Guru</label>
-                      <input type="email" class="form-control"name="email_gur" value="<?= $ubah['email'] ?>">
+                      <input type="email" class="form-control" name="email_gur" value="<?= $ubah['email'] ?>">
                     </div>
 
                     <input type="submit" name="save" class="btn btn-primary" value="Save">

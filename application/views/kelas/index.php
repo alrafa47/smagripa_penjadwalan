@@ -21,16 +21,16 @@ Content Wrapper. Contains page content -->
   <!-- Main content -->
   <section class="content">
     <!-- NOTIFIKASI -->
-    <?php 
-    if ($this->session->flashdata('flash_kelas')){ ?>
+    <?php
+    if ($this->session->flashdata('flash_kelas')) { ?>
       <div class="alert alert-success alert-dismissible">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
         <h6>
-          <i class="icon fas fa-check"></i> 
-          Data Berhasil 
+          <i class="icon fas fa-check"></i>
+          Data Berhasil
           <strong>
             <?= $this->session->flashdata('flash_kelas');   ?>
-          </strong> 
+          </strong>
         </h6>
       </div>
     <?php } ?>
@@ -65,16 +65,16 @@ Content Wrapper. Contains page content -->
                     <div class="form-group">
                       <label>jurusan</label>
                       <select class="form-control" name="id_jur">
-                        <?php 
+                        <?php
                         foreach ($jurusan as $jur) { ?>
-                          <option value="<?= $jur->id_jurusan?>"><?= $jur->nama_jurusan ?></option>
+                          <option value="<?= $jur->id_jurusan ?>"><?= $jur->nama_jurusan ?></option>
                         <?php } ?>
                       </select>
                     </div>
                     <div class="form-group">
                       <label for="exampleInputEmail1">Nama kelas</label>
                       <select name="nm_kelas" class="form-control">
-                        <?php 
+                        <?php
                         foreach (range('A', 'Z') as $char) { ?>
                           <option value="<?= $char ?>"><?= $char  ?></option>
                         <?php } ?>
@@ -102,7 +102,7 @@ Content Wrapper. Contains page content -->
         <div class="card">
           <!-- card-body -->
           <div class="card-body">
-            <table id="example1" class="table table-bordered table-striped">
+            <table id="example1" class="table table-bordered table-striped ">
               <thead>
                 <tr>
                   <th>No</th>
@@ -113,9 +113,9 @@ Content Wrapper. Contains page content -->
                 </tr>
               </thead>
               <tbody>
-                <?php 
-                $no=1;
-                foreach ($kelas as $row){ ?>
+                <?php
+                $no = 1;
+                foreach ($kelas as $row) { ?>
                   <tr>
                     <td><?= $no ?></td>
                     <td><?= $row->kelas ?></td>
@@ -125,9 +125,9 @@ Content Wrapper. Contains page content -->
                       <a href="<?= base_url() ?>DataKelas/hapus/<?= $row->id_kelas ?>" class="btn btn-danger" onclick="return confirm('yakin ?')">Hapus</a>
                     </td>
                   </tr>
-                  <?php 
+                <?php
                   $no++;
-                } 
+                }
                 ?>
               </tbody>
             </table>

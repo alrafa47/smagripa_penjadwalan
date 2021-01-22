@@ -1,5 +1,4 @@
 <?php
-
 class Rumusan_Model extends CI_Model
 {
     /* 

@@ -1,9 +1,7 @@
-
-Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->
   <section class="content-header">
-    <div class="container-fluid"> 
+    <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
           <h1>Data Guru</h1>
@@ -21,17 +19,17 @@ Content Wrapper. Contains page content -->
 
   <!-- Main content -->
   <section class="content">
-	<!-- NOTIFIKASI -->
-    <?php 
-    if ($this->session->flashdata('flash_guru')){ ?>
+    <!-- NOTIFIKASI -->
+    <?php
+    if ($this->session->flashdata('flash_guru')) { ?>
       <div class="alert alert-success alert-dismissible">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
         <h6>
-          <i class="icon fas fa-check"></i> 
-          Data Berhasil 
+          <i class="icon fas fa-check"></i>
+          Data Berhasil
           <strong>
             <?= $this->session->flashdata('flash_guru');   ?>
-          </strong> 
+          </strong>
         </h6>
       </div>
     <?php } ?>
@@ -63,41 +61,45 @@ Content Wrapper. Contains page content -->
                       <input type="text" class="form-control" name="nama_gur">
                     </div>
                     <div class="form-group">
-					  <label>Status Guru</label>
-					  <div class="radio">
-					  <label>
-						<input type="radio" name="status_gur" value="honorer" placeholder="honorer" required>Guru Honorer
-					  </label>
-					  <label>
-					    <input type="radio" name="status_gur" value="tetap" placeholder="tetap" required>Guru Tetap
-							</label>
-						</div>
-					</div>
-					<div class="form-group">
-						<label>Pendidikan Guru</label>
-						<select class="form-control" name="pendidikan_gur">
-							<option value="">-----Pilih -----</option>
-							<option value="sd">SD</option>
-							<option value="smp">SMP</option>
-							<option value="sma">SMA</option>
-							<option value="smk">SMK</option>
-							<option value="d1">D1</option>
-							<option value="d2">D2</option>
-							<option value="d3">D3</option>
-							<option value="d4">D4</option>
-							<option value="s1">S1</option>
-							<option value="s2">S2</option>
-							<option value="s3">S3</option>
-							<option value="s4">S4</option>
-						</select>
-					</div>
-					<div class="form-group">
+                      <label>Status Guru</label>
+                      <div class="radio">
+                        <label>
+                          <input type="radio" name="status_gur" value="honorer" placeholder="honorer" required>Guru Honorer
+                        </label>
+                        <label>
+                          <input type="radio" name="status_gur" value="tetap" placeholder="tetap" required>Guru Tetap
+                        </label>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>Pendidikan Guru</label>
+                      <select class="form-control" name="pendidikan_gur">
+                        <option value="">-----Pilih -----</option>
+                        <option value="sd">SD</option>
+                        <option value="smp">SMP</option>
+                        <option value="sma">SMA</option>
+                        <option value="smk">SMK</option>
+                        <option value="d1">D1</option>
+                        <option value="d2">D2</option>
+                        <option value="d3">D3</option>
+                        <option value="d4">D4</option>
+                        <option value="s1">S1</option>
+                        <option value="s2">S2</option>
+                        <option value="s3">S3</option>
+                        <option value="s4">S4</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
                       <label>Nomor Telpon Guru</label>
                       <input type="number" class="form-control" name="telp_gur">
                     </div>
                     <div class="form-group">
                       <label>Email Guru</label>
                       <input type="email" class="form-control" name="email_gur">
+                    </div>
+                    <div class="form-group">
+                      <label>Warna Guru</label>
+                      <input type="color" class="form-control" name="kode_color">
                     </div>
 
                     <input type="submit" name="save" class="btn btn-primary" value="Save">
@@ -136,10 +138,10 @@ Content Wrapper. Contains page content -->
                 </tr>
               </thead>
               <tbody>
-                <?php 
-                $no=1;
-                foreach ($guru as $row){ ?>
-                  <tr>
+                <?php
+                $no = 1;
+                foreach ($guru as $row) { ?>
+                  <tr style="background-color: <?= $row->code_color ?>;">
                     <td><?= $no ?></td>
                     <td><?= $row->id_guru ?></td>
                     <td><?= $row->nama_guru ?></td>
@@ -151,12 +153,13 @@ Content Wrapper. Contains page content -->
                       <div class="btn-group">
                         <a href="<?= base_url() ?>DataGuru/hapus/<?= $row->id_guru ?>" class="btn btn-danger" onclick="return confirm('yakin ?')">Hapus</a>
                         <a href="<?= base_url() ?>DataGuru/ubah/<?= $row->id_guru ?>" class="btn btn-warning">update</a>
+                        <a href="<?= base_url() ?>DataJadwal/pdf/<?= $row->id_guru ?>" class="btn btn-primary">Lihat Jadwal</a>
                       </div>
                     </td>
                   </tr>
-                  <?php 
+                <?php
                   $no++;
-                } 
+                }
                 ?>
               </tbody>
             </table>
@@ -171,4 +174,4 @@ Content Wrapper. Contains page content -->
   </section>
   <!-- /.content -->
 </div>
- <!-- /.content-wrapper -->
+<!-- /.content-wrapper -->

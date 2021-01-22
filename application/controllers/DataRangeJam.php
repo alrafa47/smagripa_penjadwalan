@@ -1,5 +1,5 @@
 <?php
-
+defined('BASEPATH') or exit('No direct script access allowed');
 /**
  * 
  */
@@ -8,6 +8,9 @@ class DataRangeJam extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		if (!$this->session->has_userdata('id_user')) {
+			redirect('Login');
+		}
 		$this->load->model('RangeJam_Model');
 		$this->load->library('form_validation');
 	}

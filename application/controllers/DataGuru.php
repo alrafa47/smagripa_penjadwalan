@@ -1,5 +1,5 @@
 <?php
-
+defined('BASEPATH') or exit('No direct script access allowed');
 /**
  * 
  */
@@ -8,6 +8,9 @@ class DataGuru extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		if (!$this->session->has_userdata('id_user')) {
+			redirect('Login');
+		}
 		$this->load->model('Guru_Model');
 		$this->load->library('form_validation');
 	}
@@ -64,5 +67,13 @@ class DataGuru extends CI_Controller
 			$this->session->set_flashdata('flash_guru', 'DiUbah');
 			redirect('DataGuru');
 		}
+	}
+
+	public function pdf()
+	{
+		$data['guru'] = $this->Guru_Model->getAllData();
+		$this->load->library('pdfgenerator');
+		$html = $this->load->view('guru/laporan_guru', $data, true);
+		$this->pdfgenerator->generate($html, 'tes');
 	}
 }

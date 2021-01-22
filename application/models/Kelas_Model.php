@@ -13,6 +13,9 @@ class Kelas_Model extends CI_Model
 		$this->db->select('id_kelas, kelas, kelas.id_jurusan, jurusan.nama_jurusan, nama_kelas');
 		$this->db->from('kelas');
 		$this->db->join('jurusan', 'jurusan.id_jurusan = kelas.id_jurusan');
+		$this->db->order_by('kelas.id_jurusan', 'ASC');
+		$this->db->order_by('kelas.kelas', 'ASC');
+		$this->db->order_by('kelas.nama_kelas', 'ASC');
 		return $this->db->get()->result();
 	}
 
