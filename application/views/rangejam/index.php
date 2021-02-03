@@ -4,7 +4,7 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>Data Jadwal</h1>
+          <h1>Data Range Jam</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
@@ -55,9 +55,14 @@
                       <br>
                       <?php
                       $hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum`at', 'Sabtu'];
-                      foreach ($hari as $value) { ?>
+                      foreach ($hari as $value) {
+                        $checked = '';
+                        if (in_array($value, array_column($range_jam, 'hari'))) {
+                          $checked = 'disabled checked';
+                        }
+                      ?>
                         <div class="form-check form-check-inline">
-                          <input class="form-check-input" name="chkJadwalHari[]" type="checkbox" id="<?= $value ?>" value="<?= $value ?>">
+                          <input class="form-check-input" name="chkJadwalHari[]" type="checkbox" id="<?= $value ?>" value="<?= $value ?>" <?= $checked ?>>
                           <label class="form-check-label" for="<?= $value ?>"><?= $value ?></label>
                         </div>
                       <?php } ?>
@@ -120,7 +125,7 @@
                     <td>
                       <div class="btn-group">
                         <a href="<?= base_url() ?>DataRangeJam/hapus/<?= $row->id_jadwal   ?>" class="btn btn-danger" onclick="return confirm('yakin ?')">Hapus</a>
-                        <a href="<?= base_url() ?>DataRangeJam/ubah/<?= $row->id_jadwal  ?>" class="btn btn-warning">update</a>
+                        <!-- <a href="<?= base_url() ?>DataRangeJam/ubah/<?= $row->id_jadwal  ?>" class="btn btn-warning">update</a> -->
                       </div>
                     </td>
                   </tr>

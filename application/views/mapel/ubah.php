@@ -1,11 +1,10 @@
-Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->
   <section class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1> Ubah Data Guru</h1>
+          <h1> Ubah Data Mapel</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
@@ -39,30 +38,64 @@ Content Wrapper. Contains page content -->
                     </div>
 
                     <div class="form-group">
+                      <label for="exampleInputPassword1">Kode Mapel</label>
+                      <input type="text" class="form-control" name="kd_map" value="<?= $ubah['kode_mapel'] ?>">
+                    </div>
+                    <div class="form-group">
                       <label for="exampleInputPassword1">Nama Mapel</label>
-                      <input type="text" class="form-control"name="nm_map" value="<?= $ubah['nama_mapel'] ?>">
+                      <input type="text" class="form-control" name="nm_map" value="<?= $ubah['nama_mapel'] ?>">
                     </div>
 
                     <div class="form-group">
                       <label for="exampleInputPassword1">Kelas</label>
-                      <input type="text" class="form-control"name="kls" value="<?= $ubah['kelas'] ?>">
+                      <select class="form-control" name="kls">
+                        <?php
+                        $kelas = ['X', 'XI', 'XII'];
+                        foreach ($kelas as $kls) {
+                          $selected = '';
+                          if ($ubah['kelas'] == $kls) {
+                            $selected = 'selected';
+                          } ?>
+                          <option value="<?= $kls ?>" <?= $selected ?>><?= $kls ?></option>
+                        <?php } ?>
+                      </select>
+                      <!-- <input type="text" class="form-control" name="kls" value="<?= $ubah['kelas'] ?>"> -->
                     </div>
 
                     <div class="form-group">
                       <label for="exampleInputPassword1">Beban Jam</label>
-                      <input type="text" class="form-control"name="beban" value="<?= $ubah['beban_jam'] ?>">
+                      <input type="text" class="form-control" name="beban" value="<?= $ubah['beban_jam'] ?>">
                     </div>
 
                     <div class="form-group">
                       <label>Jurusan</label>
                       <select class="form-control" name="id_jur">
-                        <?php 
-                        foreach ($jurusan as $jur) { ?>
-                          <option value="<?= $jur->id_jurusan?>"><?= $jur->nama_jurusan ?></option>
+                        <?php
+                        foreach ($jurusan as $jur) {
+                          $selected = '';
+                          if ($ubah['id_jurusan'] == $jur->id_jurusan) {
+                            $selected = 'selected';
+                          } ?>
+                          <option value="<?= $jur->id_jurusan ?>" <?= $selected ?>><?= $jur->nama_jurusan ?></option>
                         <?php } ?>
                       </select>
-                    </div>  
-                    
+                    </div>
+                    <div class="form-group">
+                      <label>Kelompok Mapel</label>
+                      <select class="form-control" name="kelompok_mapel">
+                        <?php
+
+                        $kel_mapel = ['A', 'B', 'C', 'D'];
+                        foreach ($kel_mapel as $val_kel) {
+                          $selected = '';
+                          if ($ubah['kelompok_mapel'] == $val_kel) {
+                            $selected = 'selected';
+                          } ?>
+                          <option value="<?= $val_kel ?>" <?= $selected ?>><?= $val_kel ?></option>
+                        <?php } ?>
+                      </select>
+                    </div>
+
                     <input type="submit" name="save" class="btn btn-primary" value="Save">
                   </div>
                   <!-- /.card-body -->

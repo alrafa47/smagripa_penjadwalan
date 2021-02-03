@@ -18,8 +18,10 @@ class DataRequestJadwal extends CI_Controller
 	function index()
 	{
 		// tampil list request jadwal
-		$data['requestjadwal'] = $this->RequestJadwal_Model->getAllData();
-		$data['guru'] = $this->Guru_Model->getAllData();
+		$data = [
+			'guru' => $this->Guru_Model->getAllData(),
+			'requestjadwal' => $this->RequestJadwal_Model->getAllData()
+		];
 		$this->load->view('templates/header');
 		$this->load->view('templates/sidebar');
 		$this->load->view('requestjadwal/index', $data);

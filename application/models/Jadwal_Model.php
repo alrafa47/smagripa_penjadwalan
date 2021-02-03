@@ -21,8 +21,8 @@ class Jadwal_Model extends CI_Model
 	public function insertData($hari, $kelas, $sesi, $kodeJadwal, $keterangan, $jam_mulai, $jam_selesai)
 	{
 		$data = array(
-			'hari' => $hari,
 			'id_kelas' => $kelas,
+			'hari' => $hari,
 			'sesi' => $sesi,
 			'kode_jadwal' => $kodeJadwal,
 			'keterangan' => $keterangan,
@@ -35,6 +35,15 @@ class Jadwal_Model extends CI_Model
 	public function checkingJadwalExist($hari = null, $sesi, $idGuru)
 	{
 		if ($this->db->query('SELECT * FROM penjadwalan where hari="' . $hari . '" && sesi="' . $sesi . '" && kode_jadwal LIKE %' . $idGuru . '%')->num_rows() > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public function checkingJadwalGuru($idGuru)
+	{
+		if ($this->db->query('SELECT * FROM penjadwalan where kode_jadwal LIKE %' . $idGuru . '%')->num_rows() > 0) {
 			return true;
 		} else {
 			return false;
@@ -163,11 +172,16 @@ class Jadwal_Model extends CI_Model
 		$this->db->query("UPDATE tugas_guru SET status = '$status' WHERE id_tugas='" . $id_tugas . "'");
 	}
 
-	public function resetJadwal()
+	public function resetPenjadwalan()
 	{
 		$this->db->query('UPDATE penjadwalan SET id_guru = null, id_mapel = null, kode_jadwal = "-", keterangan = "kosong" WHERE id_guru != ""');
 		$this->db->query('UPDATE tugas_guru SET status = "0" WHERE status="1"');
 		$this->db->query('UPDATE tugas_guru SET sisa_jam = beban_jam');
+	}
+
+	public function resetJadwal()
+	{
+		$this->db->empty_table('penjadwalan');
 	}
 
 

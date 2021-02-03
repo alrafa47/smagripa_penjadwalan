@@ -8,6 +8,9 @@ class Login extends CI_Controller
     public function __construct()
     {
         parent::__construct();
+        // if ($this->session->has_userdata('id_user')) {
+        //     redirect('Welcome');
+        // }
         $this->load->model('User_Model');
         $this->load->library('form_validation');
     }

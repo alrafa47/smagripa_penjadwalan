@@ -87,12 +87,12 @@ class DataPenugasanGuru extends CI_Controller
 		redirect('DataPenugasanGuru');
 	}
 
-	public function validation_form()
-	{
-		$this->PenugasanGuru_Model->tambah_data();
-		$this->session->set_flashdata('flash_penugasanguru', 'Disimpan');
-		redirect('DataPenugasanGuru/tampilan_tambah');
-	}
+	// public function validation_form()
+	// {
+	// 	$this->PenugasanGuru_Model->tambah_data();
+	// 	$this->session->set_flashdata('flash_penugasanguru', 'Disimpan');
+	// 	redirect('DataPenugasanGuru/tampilan_tambah');
+	// }
 
 	public function hapus()
 	{

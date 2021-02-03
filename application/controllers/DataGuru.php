@@ -11,12 +11,14 @@ class DataGuru extends CI_Controller
 		if (!$this->session->has_userdata('id_user')) {
 			redirect('Login');
 		}
+		$this->load->model('Jadwal_Model');
 		$this->load->model('Guru_Model');
 		$this->load->library('form_validation');
 	}
 
 	public function index()
 	{
+		$data['jadwal'] = $this->Jadwal_Model->getAllDataPenjadwalan();
 		$data['guru'] = $this->Guru_Model->getAllData();
 		$this->load->view('templates/header');
 		$this->load->view('templates/sidebar');
@@ -27,11 +29,12 @@ class DataGuru extends CI_Controller
 	public function validation_form()
 	{
 		$this->form_validation->set_rules("id_gur", "Kode Gur", "required|is_unique[guru.id_guru]|max_length[5]");
-		$this->form_validation->set_rules("nama_gur", "Nama Gur", "required|is_unique[guru.nama_guru]");
-		$this->form_validation->set_rules("status_gur", "Status Gur", "required|is_unique[guru.status]");
-		$this->form_validation->set_rules("pendidikan_gur", "Pendidikan Gur", "required|is_unique[guru.pendidikan_terakhir]");
-		$this->form_validation->set_rules("telp_gur", "Nomor Telpon Gur", "required|is_unique[guru.no_telp]");
-		$this->form_validation->set_rules("email_gur", "Email Gur", "required|is_unique[guru.email]");
+		$this->form_validation->set_rules("nama_gur", "Nama Gur", "required");
+		$this->form_validation->set_rules("status_gur", "Status Gur", "required");
+		$this->form_validation->set_rules("pendidikan_gur", "Pendidikan Gur", "required");
+		$this->form_validation->set_rules("telp_gur", "Nomor Telpon Gur", "required");
+		$this->form_validation->set_rules("email_gur", "Email Gur", "required");
+		$this->form_validation->set_rules("code_color", "code color", "required");
 		if ($this->form_validation->run() == FALSE) {
 			$this->index();
 		} else {
@@ -56,6 +59,7 @@ class DataGuru extends CI_Controller
 		$this->form_validation->set_rules("pendidikan_gur", "Pendidikan Gur", "required");
 		$this->form_validation->set_rules("telp_gur", "Nomor Telpon Gur", "required");
 		$this->form_validation->set_rules("email_gur", "Email Gur", "required");
+		$this->form_validation->set_rules("code_color", "code color", "required");
 		if ($this->form_validation->run() == FALSE) {
 			$data['ubah'] = $this->Guru_Model->detail_data($id);
 			$this->load->view('templates/header');

@@ -40,4 +40,9 @@ class Rumusan_Model extends CI_Model
             $this->db->insert('rumusan', $data);
         }
     }
+
+    public function resetRumusan()
+    {
+        $this->db->empty_table('rumusan');
+    }
 }

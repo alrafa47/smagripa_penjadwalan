@@ -4,7 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>AdminLTE 3 | Log in</title>
+    <link rel="icon" href="<?= base_url('assets/images/LOGO SMK.ico') ?>">
+    <title>SIP SMAGRIPA</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -23,15 +24,14 @@
 <body class="hold-transition login-page">
     <div class="login-box">
         <div class="login-logo">
+            <img src="<?= base_url('assets/images/LOGO SMK.png') ?>" alt="logo SMK" style="height: 245px;">
             <a href="<?= base_url('assets/') ?>index2.html"><b>SMEAGRIPA</b> SIP</a>
             <p style="font-size: smaller;"><b>S</b>istem <b>I</b>nformasi <b>P</b>enjadwalan</p>
-
         </div>
         <!-- /.login-logo -->
         <div class="card">
             <div class="card-body login-card-body">
                 <p class="login-box-msg">Silahkan Login terlebih dahulu</p>
-
                 <form action="<?= base_url('Login/validation') ?>" method="post">
                     <div class="input-group mb-3">
                         <input name="username" type="text" class="form-control" placeholder="Username">

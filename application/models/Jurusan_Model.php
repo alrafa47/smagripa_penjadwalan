@@ -1,16 +1,16 @@
-<?php 
+<?php
 
 /**
  * 
  */
 class Jurusan_Model extends CI_Model
 {
-	public function getAllData()
+	public function getAllData($grup = null)
 	{
 		return $this->db->get('jurusan')->result();
 	}
 
-	public function tambah_data( )
+	public function tambah_data()
 	{
 		$data = array(
 			'id_jurusan' => $this->input->post('id_jur', true),
@@ -20,7 +20,7 @@ class Jurusan_Model extends CI_Model
 		$this->db->insert('jurusan', $data);
 	}
 
-	public function ubah_data( )
+	public function ubah_data()
 	{
 		$data = array(
 			'nama_jurusan' => $this->input->post('nm_jur', true)
@@ -36,7 +36,6 @@ class Jurusan_Model extends CI_Model
 
 	public function detail_data($id)
 	{
-		return $this->db->get_where('jurusan', ['id_jurusan' => $id]) ->row_array(); 
+		return $this->db->get_where('jurusan', ['id_jurusan' => $id])->row_array();
 	}
 }
-?>

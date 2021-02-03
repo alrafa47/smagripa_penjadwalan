@@ -1,6 +1,6 @@
 <!-- Main Footer -->
 <footer class="main-footer">
-	<strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong>
+	<strong>Copyright &copy; 2021 SMEAGRIPA Penjadwalan.</strong>
 	All rights reserved.
 	<div class="float-right d-none d-sm-inline-block">
 		<b>Version</b> 3.0.2
@@ -172,7 +172,7 @@
 					dataFirst = $(this).data('jadwal');
 					let dataKelas = $(this).data('kelas');
 					let dataRequest = $(this).data('request');
-					console.log(dataRequest);
+					notifikasiPerpindahan(dataKelas, dataFirst.keterangan, dataFirst.nama_guru)
 					if (dataRequest == '') {
 						dataRequest = 'Senin,Selasa,Rabu,Kamis,Jum`at,Sabtu';
 					}
@@ -297,7 +297,10 @@
 			plotingAction = true;
 			let dataRequest = $(this).data('request');
 			let dataKelas = $(this).data('kelas');
+			let dataMapel = $(this).data('mapel');
+			let dataGuru = $(this).data('guru');
 			dataFirst = $(this).data('tugasguru');
+			notifikasiPerpindahan(dataKelas, dataMapel, dataGuru);
 			if (dataRequest == '') {
 				dataRequest = 'Senin,Selasa,Rabu,Kamis,Jum`at,Sabtu';
 			}
@@ -318,6 +321,24 @@
 				timer: 1500
 			})
 		});
+
+		function notifikasiPerpindahan(kelas1 = null, mapel1 = null, guru1 = null, kelas2 = null, mapel2 = null, guru2 = null) {
+			let text = "Perpindahan Jadwal " + kelas1 + " Guru : " + guru1 +
+				" Mapel :" + mapel1;
+			let html = ` 
+			<div class = "alert alert-success alert-dismissible" >
+				<button id="cancelPenjadwalan" onclick="cancel()" type = "button" class="close" data-dismiss="alert" aria-hidden= "true">×</button> <h5><i class="fas fa-exclamation"></i></i> Perpindahan Kelas</h5>` +
+				text + '<i class="fas fa-arrow-right"></i>' +
+				`</div>`;
+			$('#pindahkelas').html(html).show();
+		}
+
+		/* 
+		 * cancel penjadwalan
+		 */
+		function cancel() {
+			location.reload()
+		}
 	</script>
 <?php endif; ?>
 

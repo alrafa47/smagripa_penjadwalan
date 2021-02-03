@@ -19,16 +19,19 @@ class DataJadwal extends CI_Controller
 		$this->load->model('RequestJadwal_Model');
 		$this->load->model('PenugasanGuru_Model');
 		$this->load->model('Rumusan_Model');
+		$this->load->model('RangeJam_Model');
 	}
 	public function index($halaman = 'default')
 	{
 		$data = [
+			'rumusan' => $this->Rumusan_Model->getDataRumusan(),
 			'belumterplot' => $this->PenugasanGuru_Model->tugasGuruBelumterplot(),
 			'kelas' => $this->Kelas_Model->getAllData(),
 			'penjadwalan' => $this->Jadwal_Model->getAllDataPenjadwalan(),
 			'jadwal' => $this->Jadwal_Model->getAllData(),
 			'kelas' => $this->Kelas_Model->getAllData(),
-			'mapel' => $this->Mapel_Model->getAllData()
+			'mapel' => $this->Mapel_Model->getAllData(),
+			'rangeJam' => $this->RangeJam_Model->getAllData()
 		];
 		$this->load->view('templates/header');
 		$this->load->view('templates/sidebar');
@@ -65,14 +68,12 @@ class DataJadwal extends CI_Controller
 			echo '<tr>';
 			echo '<td colspan = "6">';
 			echo 'Mapel : ';
-			$tugasGuru = $this->PenugasanGuru_Model->getAllDataByid_kelas($rowKelas->id_kelas);
-			$totalBebanJam = 0;
-			foreach ($tugasGuru as $dataTugasGuru) {
-				$requestHari = $this->RequestJadwal_Model->getAllDataByid_guru($dataTugasGuru->id_guru);
-				$totalBebanJam += $dataTugasGuru->beban_jam;
-				echo $dataTugasGuru->id_tugas . ' : ' . $dataTugasGuru->nama_mapel .  '=>' . $dataTugasGuru->beban_jam  . '(' . $requestHari . ')' . ' <br>';
-			}
-			echo 'total beban jam : ' . $totalBebanJam;
+			// $tugasGuru = $this->PenugasanGuru_Model->getAllDataByid_kelas($rowKelas->id_kelas);
+			// foreach ($tugasGuru as $dataTugasGuru) {
+			// 	$requestHari = $this->RequestJadwal_Model->getAllDataByid_guru($dataTugasGuru->id_guru);
+			// 	$totalBebanJam += $dataTugasGuru->beban_jam;
+			// 	echo $dataTugasGuru->id_tugas . ' : ' . $dataTugasGuru->nama_mapel .  '=>' . $dataTugasGuru->beban_jam  . '(' . $requestHari . ')' . ' <br>';
+			// }
 			echo '</td>';
 			echo '</tr>';
 			echo '<tr>';
@@ -95,7 +96,7 @@ class DataJadwal extends CI_Controller
 						$kosong++;
 					}
 					$jam_selesai = date("H:i", strtotime('+' . $lama_sesi . ' minutes', $jam_mulai));
-					// $this->Jadwal_Model->insertData($rowJadwal->hari, $rowKelas->id_kelas, $i, $idJadwal, $keterangan, date("H:i", $jam_mulai), $jam_selesai);
+					$this->Jadwal_Model->insertData($rowJadwal->hari, $rowKelas->id_kelas, $i, $idJadwal, $keterangan, date("H:i", $jam_mulai), $jam_selesai);
 					echo $i . " " . $idJadwal . " " . $keterangan . " " . date("H:i", $jam_mulai) . "-" . $jam_selesai . "<br>";
 					$jam_mulai = strtotime($jam_selesai);
 				}
@@ -109,6 +110,7 @@ class DataJadwal extends CI_Controller
 			echo '</tr>';
 		}
 		echo '</table>';
+		redirect('DataJadwal');
 	}
 
 	public function tampilJadwal()
@@ -197,11 +199,6 @@ class DataJadwal extends CI_Controller
 		echo '</table>';
 	}
 
-	public function coba()
-	{
-		$this->Jadwal_Model->coba();
-	}
-
 	/* 
 	* mendapatkan data guru dan kehadirannya
 	* rumusan berfungsi untuk menentukan prioritas guru mana yang perlu di masukan dahulu
@@ -243,9 +240,10 @@ class DataJadwal extends CI_Controller
 		echo print_r($result);
 		echo "</pre>";
 		/* 
-		 !create data 
-		 */
-		// $this->Rumusan_Model->createData($result);
+		!create data 
+		*/
+		$this->Rumusan_Model->createData($result);
+		redirect('DataJadwal');
 	}
 
 
@@ -354,6 +352,7 @@ class DataJadwal extends CI_Controller
 				}
 			}
 		}
+		redirect('DataJadwal');
 	}
 
 	/* 
@@ -733,7 +732,6 @@ class DataJadwal extends CI_Controller
 		}
 	}
 
-
 	/* 
 	* ambil hari yang kosong 
 	*/
@@ -743,6 +741,18 @@ class DataJadwal extends CI_Controller
 			$dataKosong[$valueHari] = $this->Jadwal_Model->getDataPenjadwalanByIdKelas($kelas, $valueHari);
 		}
 		return $dataKosong;
+	}
+
+	public function reset_Penjadwalan()
+	{
+		$this->Jadwal_Model->resetPenjadwalan();
+		redirect('DataJadwal');
+	}
+	public function reset_rumusan()
+	{
+		$this->Rumusan_Model->resetRumusan();
+		$this->reset_Penjadwalan();
+		redirect('DataJadwal');
 	}
 
 	public function reset_jadwal()
@@ -771,5 +781,16 @@ class DataJadwal extends CI_Controller
 		// $html = $this->load->view('jadwal/exportPDF', $data, true);
 		// $this->pdfgenerator->generate($html, 'tes');
 		$this->load->view('jadwal/exportPDF', $data);
+	}
+
+	public function penghapusanDosa()
+	{
+		$arr = $this->PenugasanGuru_Model->hapusDosa();
+		foreach ($arr as $key => $value) {
+			if ($value->id_mapel == null) {
+				echo $value->id_tugas;
+				// $this->PenugasanGuru_Model->hapus_data($value->id_tugas);
+			}
+		}
 	}
 }

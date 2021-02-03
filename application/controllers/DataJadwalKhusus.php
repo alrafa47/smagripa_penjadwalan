@@ -12,12 +12,18 @@ class DataJadwalKhusus extends CI_Controller
 			redirect('Login');
 		}
 		$this->load->model('JadwalKhusus_Model');
+		$this->load->model('Kelas_Model');
+		$this->load->model('Jadwal_Model');
 		$this->load->library('form_validation');
 	}
 	function index()
 	{
 		// tampil list range jam
-		$data['range_jam'] = $this->JadwalKhusus_Model->getAllData();
+		$data = [
+			'jadwal_khusus' => $this->JadwalKhusus_Model->getAllData(),
+			'dataKelas' => $this->Kelas_Model->getAllData(),
+			'jadwal' => $this->Jadwal_Model->getAllData(),
+		];
 		$this->load->view('templates/header');
 		$this->load->view('templates/sidebar');
 		$this->load->view('jadwalKhusus/index', $data);

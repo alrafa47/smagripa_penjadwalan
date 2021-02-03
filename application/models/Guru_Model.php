@@ -19,7 +19,7 @@ class Guru_Model extends CI_Model
 			'pendidikan_terakhir' => $this->input->post('pendidikan_gur'),
 			'no_telp' => $this->input->post('telp_gur'),
 			'email' => $this->input->post('email_gur', true),
-			'code_color' => $this->input->post('kode_color', true)
+			'code_color' => $this->input->post('code_color', true)
 		);
 
 		$this->db->insert('guru', $data);
@@ -33,7 +33,7 @@ class Guru_Model extends CI_Model
 			'pendidikan_terakhir' => $this->input->post('pendidikan_gur', true),
 			'no_telp' => $this->input->post('telp_gur', true),
 			'email' => $this->input->post('email_gur', true),
-			'code_color' => $this->input->post('kode_color', true)
+			'code_color' => $this->input->post('code_color', true)
 		);
 		$this->db->where('id_guru', $this->input->post('id_gur', true));
 		$this->db->update('guru', $data);

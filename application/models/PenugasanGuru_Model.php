@@ -77,6 +77,7 @@ class PenugasanGuru_Model extends CI_Model
 		$beban_jam = $this->input->post('beban_jam');
 		$id_guru = $this->input->post('guru');
 		print_r($id_guru);
+		echo '<br>';
 		for ($i = 0; $i < $jumlah; $i++) {
 			if ($id_guru[$i] != 'Pilih Guru') {
 				$data = array(
@@ -85,7 +86,8 @@ class PenugasanGuru_Model extends CI_Model
 					'id_mapel' => $id_mapel[$i],
 					'kode_mapel' => $kode_mapel,
 					'id_kelas' => $id_kelas[$i],
-					'sisa_jam' => $beban_jam[$i]
+					'sisa_jam' => $beban_jam[$i],
+					'beban_jam' => $beban_jam[$i]
 				);
 				print_r($data);
 				echo '<br>';
@@ -127,5 +129,10 @@ class PenugasanGuru_Model extends CI_Model
 	{
 		return $this->db->query("SELECT mapel.kode_mapel, mapel.nama_mapel, sum(case when tugas_guru.id_tugas IS NULL then 1 else 0 end) AS jumlah_kosong FROM `mapel` INNER join kelas on (mapel.kelas = kelas.kelas && mapel.id_jurusan = kelas.id_jurusan) LEFT JOIN tugas_guru on (kelas.id_kelas = tugas_guru.id_kelas && mapel.id_mapel = tugas_guru.id_mapel) GROUP by kode_mapel ORDER BY mapel.kode_mapel ASC
 		")->result();
+	}
+
+	public function hapusDosa()
+	{
+		return $this->db->query("SELECT * FROM `tugas_guru` LEFT JOIN mapel ON tugas_guru.id_mapel = mapel.id_mapel ORDER BY `mapel`.`id_mapel` ASC ")->result();
 	}
 }

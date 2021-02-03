@@ -99,7 +99,7 @@
                     </div>
                     <div class="form-group">
                       <label>Warna Guru</label>
-                      <input type="color" class="form-control" name="kode_color">
+                      <input type="color" class="form-control" name="code_color">
                     </div>
 
                     <input type="submit" name="save" class="btn btn-primary" value="Save">
@@ -140,6 +140,7 @@
               <tbody>
                 <?php
                 $no = 1;
+
                 foreach ($guru as $row) { ?>
                   <tr style="background-color: <?= $row->code_color ?>;">
                     <td><?= $no ?></td>
@@ -153,7 +154,17 @@
                       <div class="btn-group">
                         <a href="<?= base_url() ?>DataGuru/hapus/<?= $row->id_guru ?>" class="btn btn-danger" onclick="return confirm('yakin ?')">Hapus</a>
                         <a href="<?= base_url() ?>DataGuru/ubah/<?= $row->id_guru ?>" class="btn btn-warning">update</a>
-                        <a href="<?= base_url() ?>DataJadwal/pdf/<?= $row->id_guru ?>" class="btn btn-primary">Lihat Jadwal</a>
+                        <?php
+                        foreach ($jadwal as $value) {
+                          if ($value->id_guru == $row->id_guru) {
+                        ?>
+                            <a href="<?= base_url() ?>DataJadwal/pdf/<?= $row->id_guru ?>" class="btn btn-primary" disabled>Lihat Jadwal</a>
+
+                        <?php
+                            break;
+                          }
+                        }
+                        ?>
                       </div>
                     </td>
                   </tr>

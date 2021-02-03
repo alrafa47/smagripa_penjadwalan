@@ -86,6 +86,10 @@
                       <label for="exampleInputPassword1">Email Guru</label>
                       <input type="email" class="form-control" name="email_gur" value="<?= $ubah['email'] ?>">
                     </div>
+                    <div class="form-group">
+                      <label for="exampleInputPassword1">Kode Warna</label>
+                      <input type="color" class="form-control" name="code_color" value="<?= $ubah['code_color'] ?>">
+                    </div>
 
                     <input type="submit" name="save" class="btn btn-primary" value="Save">
                   </div>

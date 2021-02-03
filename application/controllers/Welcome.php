@@ -10,27 +10,22 @@ class Welcome extends CI_Controller
 		if (!$this->session->has_userdata('id_user')) {
 			redirect('Login');
 		}
+		$this->load->model('Guru_Model');
+		$this->load->model('Jurusan_Model');
+		$this->load->model('Kelas_Model');
+		$this->load->model('Mapel_Model');
 	}
-	/**
-	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/welcome
-	 *	- or -
-	 * 		http://example.com/index.php/welcome/index
-	 *	- or -
-	 * Since this controller is set as the default controller in
-	 * config/routes.php, it's displayed at http://example.com/
-	 *
-	 * So any other public methods not prefixed with an underscore will
-	 * map to /index.php/welcome/<method_name>
-	 * @see https://codeigniter.com/user_guide/general/urls.html
-	 */
 	public function index()
 	{
+		$data = [
+			'guru' => count($this->Guru_Model->getAllData()),
+			'mapel' => count($this->Mapel_Model->getAllData(true)),
+			'kelas' => count($this->Kelas_Model->getAllData()),
+			'jurusan' => count($this->Jurusan_Model->getAllData())
+		];
 		$this->load->view("templates/header");
 		$this->load->view("templates/sidebar");
-		$this->load->view("index.php");
+		$this->load->view("index", $data);
 		$this->load->view("templates/footer");
 	}
 }

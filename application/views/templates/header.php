@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-
+  <link rel="icon" href="<?= base_url('assets/images/LOGO SMK.ico') ?>">
   <title>SIP SMAGRIPA</title>
 
 

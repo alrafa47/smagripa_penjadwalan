@@ -31,7 +31,6 @@
         </h6>
       </div>
     <?php } ?>
-    <!-- tambah data -->
     <div class="row">
       <div class="col-md-12">
         <div class="card">
@@ -78,7 +77,6 @@
                       <label for="keterangan">Keterangan</label>
                       <input class="form-control" type="text" name="keterangan" id="keterangan">
                     </div>
-
                     <div class="form-group">
                       <label for="sesi">Sesi Ke</label>
                       <input class="form-control" type="number" name="sesi" id="sesi" min="0" max="20">
@@ -124,7 +122,7 @@
               <tbody>
                 <?php
                 $no = 1;
-                foreach ($range_jam as $row) { ?>
+                foreach ($jadwal_khusus as $row) { ?>
                   <tr>
                     <td><?= $no ?></td>
                     <td><?= $row['hari'] ?></td>
@@ -135,7 +133,7 @@
                     <td>
                       <div class="btn-group">
                         <a href="<?= base_url() ?>DataJadwalKhusus/hapus/<?= $row['id_jadwal_khusus']   ?>" class="btn btn-danger" onclick="return confirm('yakin ?')">Hapus</a>
-                        <a href="<?= base_url() ?>DataJadwalKhusus/ubah/<?= $row['id_jadwal_khusus']  ?>" class="btn btn-warning">update</a>
+                        <!-- <a href="<?= base_url() ?>DataJadwalKhusus/ubah/<?= $row['id_jadwal_khusus']  ?>" class="btn btn-warning">update</a> -->
                       </div>
                     </td>
                   </tr>
@@ -152,6 +150,92 @@
       </div>
       <!-- /.col -->
     </div>
+
+    <?php
+    if (empty($dataKelas)) {
+      echo '<div class="alert alert-danger alert-dismissible">';
+      echo '<button type="button" class="close" data-dismiss="alert" ;aria-hidden="true">×</button>';
+      echo '<h5><i class="fas fa-times"></i> Alert!</h5>';
+      echo 'data Kelas Belum Terisi';
+      echo '</div>';
+    }
+    // if (empty($jadwal_khusus)) {
+    //   echo '<div class="alert alert-danger alert-dismissible">';
+    //   echo '<button type="button" class="close" data-dismiss="alert" ;aria-hidden="true">×</button>';
+    //   echo '<h5><i class="fas fa-times"></i> Alert!</h5>';
+    //   echo 'data Range Jam Belum Terisi';
+    //   echo '</div>';
+    // }
+    if (empty($jadwal)) {
+      echo '<div class="alert alert-danger alert-dismissible">';
+      echo '<button type="button" class="close" data-dismiss="alert" ;aria-hidden="true">×</button>';
+      echo '<h5><i class="fas fa-times"></i> Alert!</h5>';
+      echo 'data Jadwal Belum Terisi';
+      echo '</div>';
+    }
+    ?>
+    <?php if (!empty($jadwal) && !empty($dataKelas)) : ?>
+      <div class="row">
+        <?php
+        $arrHari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum`at', 'Sabtu'];
+        $hari = array_column($jadwal, 'hari');
+        function keteranganSesi($jadwal_khusus, $hari, $kelas, $sesi)
+        {
+          foreach ($jadwal_khusus as $value) {
+            if ($value['hari'] == $hari && $value['kelas'] == $kelas && $value['sesi'] == $sesi) {
+              return $value['keterangan'];
+            }
+          }
+          // return ;
+        }
+        foreach ($arrHari as $valueHari) {
+          if (in_array($valueHari, $hari)) {
+            # code...
+            // foreach ($hari as $valueHari) :
+            $keyJadwal = array_search($valueHari, array_column($jadwal, 'hari'));
+            $jumlahSesi = $jadwal[$keyJadwal]->jumlah_sesi;
+        ?>
+            <div class="col-6">
+              <div class="card">
+                <!-- card-body -->
+                <div class="card-body">
+                  <h3><?= $valueHari ?></h3>
+                  <table class="table table-bordered table-responsive">
+                    <tr>
+                      <th>+</th>
+                      <?php foreach ($dataKelas as $valueKelas) : ?>
+                        <th><?= $valueKelas->id_kelas ?></th>
+                      <?php endforeach; ?>
+                    </tr>
+                    <?php
+                    // print_r($penjadwalan);
+                    for ($i = 0; $i < $jumlahSesi; $i++) { ?>
+                      <tr>
+                        <td><?= $i ?></td>
+                        <?php foreach ($dataKelas as $valueKelas) : ?>
+                          <td>
+                            <?php
+                            $result =  keteranganSesi($jadwal_khusus, $valueHari, $valueKelas->kelas, $i);
+                            echo $result;
+                            ?>
+                          </td>
+                        <?php endforeach; ?>
+                      </tr>
+                    <?php } ?>
+                  </table>
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        <?php
+            // endforeach;
+          }
+        }
+        ?>
+      </div>
+    <?php endif; ?>
     <!-- /.row -->
   </section>
   <!-- /.content -->
