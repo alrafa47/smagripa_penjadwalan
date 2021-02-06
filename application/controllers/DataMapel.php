@@ -36,11 +36,26 @@ class DataMapel extends CI_Controller
 		redirect('DataMapel');
 	}
 
-	public function hapus($id_map)
+	// public function hapus($id_map)
+	// {
+	// 	$this->Mapel_Model->hapus_data($id_map);
+	// 	$this->session->set_flashdata('flash_mapel', 'Dihapus');
+	// 	redirect('DataMapel');
+	// }
+
+	public function hapus()
 	{
-		$this->Mapel_Model->hapus_data($id_map);
+		$check = $this->input->post('check');
+		$id = $this->input->post('id');
+		$this->Mapel_Model->hapus_data($id, $check);
 		$this->session->set_flashdata('flash_mapel', 'Dihapus');
-		redirect('DataMapel');
+		// redirect('DataMapel');
+	}
+
+	public function checkForeign()
+	{
+		$data = $this->Mapel_Model->checkForeign($this->input->post('id'));
+		echo json_encode($data);
 	}
 
 	public function ubah($id_map)

@@ -75,17 +75,19 @@
 					<div class="card-body">
 						<?php if (empty($rumusan)) { ?>
 							<?php if (!empty($penjadwalan)) { ?>
-								<a class="ml-3 btn btn-warning float-right" href="<?= base_url('DataJadwal/rumusan') ?>">Masukkan Rumusan</a>
+								<button id="btn_buat_rumusan" class="ml-3 btn btn-warning float-right" data-ref="<?= base_url('DataJadwal/rumusan') ?>">Masukkan Rumusan</button>
+								<!-- <a class="ml-3 btn btn-warning float-right" href="<?= base_url('DataJadwal/rumusan') ?>">Masukkan Rumusan</a> -->
 							<?php } ?>
 						<?php } else { ?>
+							<!-- <button id="btn_reset_rumusan" class="ml-3 btn btn-danger float-left" data-ref="<?= base_url('DataJadwal/reset_rumusan') ?>">Reset Rumusan</button> -->
 							<a class="ml-3 btn btn-danger float-left" href="<?= base_url('DataJadwal/reset_rumusan') ?>">Reset Rumusan</a>
 						<?php } ?>
 						<?php
 						if (empty($penjadwalan)) {
 							if (!empty($rangeJam)) {
 						?>
-								<a class="ml-3 btn btn-success float-right" href="<?= base_url('DataJadwal/createJadwal') ?>">Buat Jadwal</a>
-
+								<button id="btn_buat_jadwal" class="ml-3 btn btn-success float-right" data-ref="<?= base_url('DataJadwal/createJadwal') ?>">Buat Jadwal</button>
+								<!-- <a class="ml-3 btn btn-success float-right" href="<?= base_url('DataJadwal/createJadwal') ?>">Buat Jadwal</a> -->
 							<?php
 							}
 						} else {
@@ -96,7 +98,8 @@
 						<?php if (!empty($rumusan) && !empty($penjadwalan)) : ?>
 							<a class="ml-3 btn btn-warning float-right" href="<?= base_url('DataJadwal/pdf') ?>">export Penjadwalan</a>
 							<a class="ml-3 btn btn-danger float-right" href="<?= base_url('DataJadwal/reset_Penjadwalan') ?>">Reset Penjadwalan</a>
-							<a class="btn btn-success float-right" href="<?= base_url('DataJadwal/ploting_jadwal') ?>">Ploting Jadwal</a>
+							<!-- <a class="btn btn-success float-right" href="<?= base_url('DataJadwal/ploting_jadwal') ?>">Ploting Jadwal</a> -->
+							<button id="btn_plotting" class="btn btn-success float-right" data-ref="<?= base_url('DataJadwal/ploting_jadwal') ?>">Ploting Jadwal</button>
 							<!-- <a class="btn btn-primary" href="<?= base_url('DataJadwal/tampilJadwalSementara') ?>">tampil jadwal Sementara</a> -->
 							<!-- <a class="btn btn-primary" href="<?= base_url('DataJadwal/tampilJadwal') ?>">tampil jadwal</a> -->
 						<?php endif; ?>

@@ -64,6 +64,61 @@
 	// 		$("input[name=chkHari\\[\\]]").removeAttr('disabled');
 	// 	}
 	// })
+	$('.hapus').click(function() {
+		let id = $(this).data('id');
+		let ref = $(this).data('ref');
+
+		function hapus_data(id, ref, check) {
+			$.ajax({
+				data: {
+					'id': id,
+					'check': check
+				},
+				method: "POST",
+				url: ref,
+				dataType: 'JSON',
+				success: function(res) {}
+			});
+		}
+
+		(async () => {
+			const {
+				value: accept
+			} = await Swal.fire({
+				title: 'Perhatian',
+				input: 'checkbox',
+				inputValue: 1,
+				inputPlaceholder: 'Paksa Hapus Semua Data yang berkaitan',
+				confirmButtonText: 'Hapus &nbsp;<i class="fa fa-arrow-right"></i>',
+				inputValidator: (result) => {
+					if (!result) {
+						$.ajax({
+							data: {
+								'id': id
+							},
+							method: "POST",
+							url: "<?= base_url($this->uri->segment(1) . '/checkForeign') ?>",
+							dataType: 'JSON',
+							success: function(res) {
+								if (JSON.parse(res)) {
+									Swal.fire('Terdapat Data Terkait, Silahkan Paksa Hapus/ Hapus Data Terkait Terlebih dahulu')
+								} else {
+									hapus_data(id, ref, false);
+									location.reload();
+								}
+							}
+						});
+					}
+				}
+			})
+			if (accept) {
+				hapus_data(id, ref, true);
+				Swal.fire('Hapus data').then(function(params) {
+					location.reload();
+				});
+			}
+		})()
+	});
 </script>
 <?php if ($this->uri->segment(1) == "DataPenugasanGuru") : ?>
 	<script>
@@ -163,6 +218,94 @@
 
 <?php if ($this->uri->segment(1) == "DataJadwal") : ?>
 	<script>
+		// buat Jadwal
+		$('#btn_buat_jadwal').click(function() {
+			let ref = $(this).data('ref');
+			Swal.fire({
+				title: 'Loading',
+				html: 'Mohon Tunggu',
+				allowOutsideClick: () => !Swal.isLoading(),
+				didOpen: () => {
+					Swal.showLoading();
+					// execute ajax
+					$.ajax({
+						type: "POST",
+						url: ref,
+						success: function(e) {
+							if (JSON.parse(e) == 'sukses') {
+								Swal.fire({
+									icon: 'success',
+									title: 'Proses Selesai',
+								}).then(() => {
+									location.reload();
+								})
+							}
+						}
+					});
+				}
+			})
+		});
+
+		// Buat rumusan
+		$('#btn_buat_rumusan').click(function() {
+			let ref = $(this).data('ref');
+			Swal.fire({
+				title: 'Loading',
+				html: 'Mohon Tunggu',
+				allowOutsideClick: () => !Swal.isLoading(),
+				didOpen: () => {
+					Swal.showLoading();
+					// execute ajax
+					$.ajax({
+						type: "POST",
+						url: ref,
+						success: function(e) {
+							if (JSON.parse(e) == 'sukses') {
+								Swal.fire({
+									icon: 'success',
+									title: 'Proses Selesai',
+								}).then(() => {
+									location.reload();
+								})
+							}
+						}
+					});
+				}
+			})
+		});
+
+
+		// plotting
+		$('#btn_plotting').click(function() {
+			let ref = $(this).data('ref');
+			Swal.fire({
+				title: 'Loading',
+				html: 'Mohon Tunggu',
+				allowOutsideClick: () => !Swal.isLoading(),
+				didOpen: () => {
+					Swal.showLoading();
+					// execute ajax
+
+					$.ajax({
+						type: "POST",
+						url: ref,
+						success: function(e) {
+							if (JSON.parse(e) == 'sukses') {
+								Swal.fire({
+									icon: 'success',
+									title: 'Proses Selesai',
+								}).then(() => {
+									location.reload();
+								})
+							}
+						}
+					});
+				}
+			})
+		});
+
+
+
 		let dataFirst = '';
 		let dataSecond = '';
 		let plotingAction = false;

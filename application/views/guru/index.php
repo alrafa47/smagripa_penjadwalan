@@ -152,7 +152,8 @@
                     <td><?= $row->email ?></td>
                     <td>
                       <div class="btn-group">
-                        <a href="<?= base_url() ?>DataGuru/hapus/<?= $row->id_guru ?>" class="btn btn-danger" onclick="return confirm('yakin ?')">Hapus</a>
+                        <button data-ref="<?= base_url('DataGuru/hapus') ?>" data-id="<?= $row->id_guru ?>" class="btn btn-danger hapus">Hapus</button>
+                        <!-- <a href="<?= base_url() ?>DataGuru/hapus/<?= $row->id_guru ?>" class="btn btn-danger" onclick="return confirm('yakin ?')">Hapus</a> -->
                         <a href="<?= base_url() ?>DataGuru/ubah/<?= $row->id_guru ?>" class="btn btn-warning">update</a>
                         <?php
                         foreach ($jadwal as $value) {

@@ -37,11 +37,19 @@ class DataJurusan extends CI_Controller
 		}
 	}
 
-	public function hapus($id)
+	public function hapus()
 	{
-		$this->Jurusan_Model->hapus_data($id);
+		$check = $this->input->post('check');
+		$id = $this->input->post('id');
+		$this->Jurusan_Model->hapus_data($id, $check);
 		$this->session->set_flashdata('flash_jurusan', 'Dihapus');
-		redirect('DataJurusan');
+		// redirect('DataJurusan');
+	}
+
+	public function checkForeign()
+	{
+		$data = $this->Jurusan_Model->checkForeign($this->input->post('id'));
+		echo json_encode($data);
 	}
 
 	public function ubah($id)

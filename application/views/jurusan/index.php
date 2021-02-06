@@ -101,7 +101,7 @@
                     <td><?= $row->nama_jurusan ?></td>
                     <td>
                       <div class="btn-group">
-                        <a href="<?= base_url() ?>DataJurusan/hapus/<?= $row->id_jurusan ?>" class="btn btn-danger" onclick="return confirm('yakin ?')">Hapus</a>
+                        <button data-ref="<?= base_url('DataJurusan/hapus') ?>" data-id="<?= $row->id_jurusan ?>" class="btn btn-danger hapus">Hapus</button>
                         <a href="<?= base_url() ?>DataJurusan/ubah/<?= $row->id_jurusan ?>" class="btn btn-warning">update</a>
                       </div>
                     </td>

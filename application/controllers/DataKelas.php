@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * 
@@ -14,7 +14,6 @@ class DataKelas extends CI_Controller
 		$this->load->model('Kelas_Model');
 		$this->load->model('Jurusan_Model');
 		$this->load->library('form_validation');
-
 	}
 	function index()
 	{
@@ -29,18 +28,34 @@ class DataKelas extends CI_Controller
 		$this->load->view('templates/footer');
 	}
 
-	
-	public function validation_form(){
+	public function validation_form()
+	{
 		$this->Kelas_Model->tambah_data();
 		$this->session->set_flashdata('flash_kelas', 'Disimpan');
 		redirect('DataKelas');
 	}
 
-	public function hapus($id)
+	// public function hapus($id)
+	// {
+	// 	$this->Kelas_Model->hapus_data($id);
+	// 	$this->session->set_flashdata('flash_kelas', 'Dihapus');
+	// 	redirect('DataKelas');
+	// }
+
+
+	public function hapus()
 	{
-		$this->Kelas_Model->hapus_data($id);
+		$check = $this->input->post('check');
+		$id = $this->input->post('id');
+		$this->Kelas_Model->hapus_data($id, $check);
 		$this->session->set_flashdata('flash_kelas', 'Dihapus');
-		redirect('DataKelas');
+		// redirect('DataKelas');
+	}
+
+	public function checkForeign()
+	{
+		$data = $this->Kelas_Model->checkForeign($this->input->post('id'));
+		echo json_encode($data);
 	}
 
 	// public function ubah($id)

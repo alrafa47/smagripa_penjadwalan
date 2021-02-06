@@ -172,7 +172,8 @@
                       <td><?= $row->kelompok_mapel ?></td>
                       <td>
                         <div class="btn-group">
-                          <a href="<?= base_url() ?>DataMapel/hapus/<?= $row->id_mapel ?>" class="btn btn-danger" onclick="return confirm('yakin ?')">Hapus</a>
+                          <button data-ref="<?= base_url('DataMapel/hapus') ?>" data-id="<?= $row->id_mapel ?>" class="btn btn-danger hapus">Hapus</button>
+                          <!-- <a href="<?= base_url() ?>DataMapel/hapus/<?= $row->id_mapel ?>" class="btn btn-danger" onclick="return confirm('yakin ?')">Hapus</a> -->
                           <a href="<?= base_url() ?>DataMapel/ubah/<?= $row->id_mapel ?>" class="btn btn-warning">update</a>
                         </div>
                       </td>

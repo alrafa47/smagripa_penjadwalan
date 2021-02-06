@@ -44,12 +44,28 @@ class DataGuru extends CI_Controller
 		}
 	}
 
-	public function hapus($id)
+	// public function hapus($id)
+	// {
+	// 	$this->Guru_Model->hapus_data($id);
+	// 	$this->session->set_flashdata('flash_guru', 'Dihapus');
+	// 	redirect('DataGuru');
+	// }
+
+	public function hapus()
 	{
-		$this->Guru_Model->hapus_data($id);
+		$check = $this->input->post('check');
+		$id = $this->input->post('id');
+		$this->Guru_Model->hapus_data($id, $check);
 		$this->session->set_flashdata('flash_guru', 'Dihapus');
-		redirect('DataGuru');
+		// redirect('DataKelas');
 	}
+
+	public function checkForeign()
+	{
+		$data = $this->Guru_Model->checkForeign($this->input->post('id'));
+		echo json_encode($data);
+	}
+
 
 	public function ubah($id)
 	{

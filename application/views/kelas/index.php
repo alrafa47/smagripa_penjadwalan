@@ -122,7 +122,8 @@
                       <td><?= $row->nama_jurusan ?></td>
                       <td><?= $row->nama_kelas ?></td>
                       <td>
-                        <a href="<?= base_url() ?>DataKelas/hapus/<?= $row->id_kelas ?>" class="btn btn-danger" onclick="return confirm('yakin ?')">Hapus</a>
+                        <button data-ref="<?= base_url('DataKelas/hapus') ?>" data-id="<?= $row->id_kelas ?>" class="btn btn-danger hapus">Hapus</button>
+                        <!-- <a href="<?= base_url() ?>DataKelas/hapus/<?= $row->id_kelas ?>" class="btn btn-danger" onclick="return confirm('yakin ?')">Hapus</a> -->
                       </td>
                     </tr>
                   <?php
